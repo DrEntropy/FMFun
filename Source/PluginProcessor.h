@@ -55,8 +55,8 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
 
 private:
-    // Decrare our synth audio source, but have to figure out the midi first.
-    // SynthAudioSource synthAudioSource;
+    // Decrare our synth  not sureif this will work but what the heck
+    juce::Synthesiser synth;
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SuperAdditiveAudioProcessor)
 };

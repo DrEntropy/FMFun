@@ -23,6 +23,11 @@ SuperAdditiveAudioProcessor::SuperAdditiveAudioProcessor()
                        )
 #endif
 {
+    
+    for (auto i = 0; i < 4; ++i)
+        synth.addVoice (new SineWaveVoice());
+
+    synth.addSound (new SineWaveSound());
 }
 
 SuperAdditiveAudioProcessor::~SuperAdditiveAudioProcessor()
@@ -96,7 +101,7 @@ void SuperAdditiveAudioProcessor::prepareToPlay (double sampleRate, int samplesP
 {
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
-    //synthAudioSource.prepareToPlay (samplesPerBlock,sampleRate);
+    synth.setCurrentPlaybackSampleRate (sampleRate);
 }
 
 void SuperAdditiveAudioProcessor::releaseResources()
@@ -152,12 +157,11 @@ void SuperAdditiveAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer
     // the samples and the outer loop is handling the channels.
     // Alternatively, you can process the samples with the channels
     // interleaved by keeping the same state.
-    for (int channel = 0; channel < totalNumInputChannels; ++channel)
-    {
-        auto* channelData = buffer.getWritePointer (channel);
-
-        // ..do something to the data...
-    }
+ 
+      
+    synth.renderNextBlock (buffer, midiMessages,
+                            0, buffer.getNumSamples());
+    
 }
 
 //==============================================================================
