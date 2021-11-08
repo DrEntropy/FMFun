@@ -21,7 +21,7 @@ struct SineWaveSound   : public juce::SynthesiserSound
 //==============================================================================
 struct SineWaveVoice   : public juce::SynthesiserVoice
 {
-    SineWaveVoice() {}
+    SineWaveVoice(juce::AudioProcessorValueTreeState& apvts):apvts(apvts) {}
 
     bool canPlaySound (juce::SynthesiserSound* sound) override
     {
@@ -62,11 +62,16 @@ struct SineWaveVoice   : public juce::SynthesiserVoice
     {
         if (angleDelta != 0.0)
         {
+            // TODO, smooth this out.
+            // see https://docs.juce.com/master/tutorial_audio_processor_value_tree_state.html
+            float mI = apvts.getRawParameterValue("mI")->load();
             if (tailOff > 0.0) // [7]
             {
+               
                 while (--numSamples >= 0)
                 {
-                    auto currentSample = (float) (std::sin (currentAngle) * level * tailOff);
+                     
+                    auto currentSample = (float) (std::sin (currentAngle + mI*std::sin(currentAngle)) * level * tailOff);
 
                     for (auto i = outputBuffer.getNumChannels(); --i >= 0;)
                         outputBuffer.addSample (i, startSample, currentSample);
@@ -89,7 +94,7 @@ struct SineWaveVoice   : public juce::SynthesiserVoice
             {
                 while (--numSamples >= 0) // [6]
                 {
-                    auto currentSample = (float) (std::sin (currentAngle) * level);
+                    auto currentSample = (float) (std::sin (currentAngle+ mI*std::sin(currentAngle)) * level);
 
                     for (auto i = outputBuffer.getNumChannels(); --i >= 0;)
                         outputBuffer.addSample (i, startSample, currentSample);
@@ -103,6 +108,8 @@ struct SineWaveVoice   : public juce::SynthesiserVoice
 
 private:
     double currentAngle = 0.0, angleDelta = 0.0, level = 0.0, tailOff = 0.0;
+    
+    juce::AudioProcessorValueTreeState& apvts;
 };
 
 

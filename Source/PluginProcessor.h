@@ -57,6 +57,13 @@ public:
 private:
     // Decrare our synth  not sureif this will work but what the heck
     juce::Synthesiser synth;
+    
+    // APVTS
+    using APVTS = juce::AudioProcessorValueTreeState;
+    
+    APVTS apvts;
+    
+    
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SuperAdditiveAudioProcessor)
 };

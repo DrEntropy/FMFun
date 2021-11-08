@@ -22,10 +22,14 @@ SuperAdditiveAudioProcessor::SuperAdditiveAudioProcessor()
                      #endif
                        )
 #endif
-{
+, apvts( *this, nullptr, "PARAMETERS", { std::make_unique<juce::AudioParameterFloat> ("mI","Index",juce::NormalisableRange<float>(0,10),0)
+//
+      }
+        )
+         {
     
     for (auto i = 0; i < 4; ++i)
-        synth.addVoice (new SineWaveVoice());
+        synth.addVoice (new SineWaveVoice(apvts));
 
     synth.addSound (new SineWaveSound());
 }
