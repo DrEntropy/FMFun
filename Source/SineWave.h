@@ -76,14 +76,14 @@ struct SineWaveVoice   : public juce::SynthesiserVoice
             float newmI = apvts.getRawParameterValue("mI")->load();
           
             s_mI.setTargetValue(newmI);
-            float mI = s_mI.skip(numSamples);
+            float mI;
             
             if (tailOff > 0.0) // [7]
             {
                
                 while (--numSamples >= 0)
                 {
-                     
+                    mI = s_mI.getNextValue();
                     auto currentSample = (float) (std::sin (currentAngle + mI*std::sin(currentAngle)) * level * tailOff);
 
                     for (auto i = outputBuffer.getNumChannels(); --i >= 0;)
@@ -107,6 +107,7 @@ struct SineWaveVoice   : public juce::SynthesiserVoice
             {
                 while (--numSamples >= 0) // [6]
                 {
+                    mI = s_mI.getNextValue();
                     auto currentSample = (float) (std::sin (currentAngle+ mI*std::sin(currentAngle)) * level);
 
                     for (auto i = outputBuffer.getNumChannels(); --i >= 0;)
