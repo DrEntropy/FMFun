@@ -22,6 +22,14 @@ struct SineWaveSound   : public juce::SynthesiserSound
 struct SineWaveVoice   : public juce::SynthesiserVoice
 {
     SineWaveVoice(juce::AudioProcessorValueTreeState& apvts):apvts(apvts) {}
+    
+    void setCurrentPlaybackSampleRate (double newRate) override {
+        // not sure this is the best place for this .
+        if(newRate>0)
+          s_mI.reset(newRate,0.2f);
+        // call super
+        juce::SynthesiserVoice::setCurrentPlaybackSampleRate(newRate);
+    }
 
     bool canPlaySound (juce::SynthesiserSound* sound) override
     {
@@ -34,6 +42,7 @@ struct SineWaveVoice   : public juce::SynthesiserVoice
         currentAngle = 0.0;
         level = velocity * 0.15;
         tailOff = 0.0;
+      
 
         auto cyclesPerSecond = juce::MidiMessage::getMidiNoteInHertz (midiNoteNumber);
         auto cyclesPerSample = cyclesPerSecond / getSampleRate();
@@ -64,7 +73,11 @@ struct SineWaveVoice   : public juce::SynthesiserVoice
         {
             // TODO, smooth this out.
             // see https://docs.juce.com/master/tutorial_audio_processor_value_tree_state.html
-            float mI = apvts.getRawParameterValue("mI")->load();
+            float newmI = apvts.getRawParameterValue("mI")->load();
+          
+            s_mI.setTargetValue(newmI);
+            float mI = s_mI.skip(numSamples);
+            
             if (tailOff > 0.0) // [7]
             {
                
@@ -110,6 +123,9 @@ private:
     double currentAngle = 0.0, angleDelta = 0.0, level = 0.0, tailOff = 0.0;
     
     juce::AudioProcessorValueTreeState& apvts;
+    
+    //smothing variables starts at zero
+    juce::SmoothedValue<float> s_mI{0.f};
 };
 
 
