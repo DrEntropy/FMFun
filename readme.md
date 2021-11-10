@@ -5,3 +5,4 @@
 https://docs.juce.com/master/tutorial_synth_using_midi_input.html
 but as a plugin instead of an app.   
 
+* This will also include   simple two op fm as an option... maybe .
