@@ -1,39 +1,40 @@
 /*
   ==============================================================================
 
-    SineWave.h
-    Created: 5 Nov 2021 10:12:02am
-    Author:  JUCE team.  I am borrowing this to get started...
+    FMWave.h
+     Based on SineWave.h from Juce Team.
 
   ==============================================================================
 */
 
 #pragma once
 //==============================================================================
-struct SineWaveSound   : public juce::SynthesiserSound
+struct FMSound   : public juce::SynthesiserSound
 {
-    SineWaveSound() {}
+    FMSound() {}
 
     bool appliesToNote    (int) override        { return true; }
     bool appliesToChannel (int) override        { return true; }
 };
 
 //==============================================================================
-struct SineWaveVoice   : public juce::SynthesiserVoice
+struct FMVoice   : public juce::SynthesiserVoice
 {
-    SineWaveVoice(juce::AudioProcessorValueTreeState& apvts):apvts(apvts) {}
+    FMVoice(juce::AudioProcessorValueTreeState& apvts):apvts(apvts) {}
     
     void setCurrentPlaybackSampleRate (double newRate) override {
         // not sure this is the best place for this .
+        // hardwired 50 ms transition rate.
+        
         if(newRate>0)
-          s_mI.reset(newRate,0.2f);
+          s_mI.reset(newRate,0.050f);
         // call super
         juce::SynthesiserVoice::setCurrentPlaybackSampleRate(newRate);
     }
 
     bool canPlaySound (juce::SynthesiserSound* sound) override
     {
-        return dynamic_cast<SineWaveSound*> (sound) != nullptr;
+        return dynamic_cast<FMSound*> (sound) != nullptr;
     }
 
     void startNote (int midiNoteNumber, float velocity,

@@ -61,12 +61,13 @@
       </OUTPUTS>
     </LAYOUT>
   </FILTER>
-  <FILTER uid="5" x="0.3025" y="0.4134615384615384">
-    <PLUGIN name="SuperAdditive" format="VST3" category="Instrument|Synth"
-            manufacturer="yourcompany" version="1.0.0" file="/Users/ronaldlegere/Library/Audio/Plug-Ins/VST3/SuperAdditive.vst3"
-            uniqueId="f3ada62d" isInstrument="1" fileTime="17cf1191f19" infoUpdateTime="17cf122968f"
+  <FILTER uid="6" x="0.31375" y="0.4" uiLastX_Generic="151" uiLastY_Generic="133"
+          uiopen_Generic="0">
+    <PLUGIN name="FMFun" format="VST3" category="Instrument|Synth" manufacturer="yourcompany"
+            version="1.0.0" file="/Users/ronaldlegere/Library/Audio/Plug-Ins/VST3/FMFun.vst3"
+            uniqueId="f3ada62d" isInstrument="1" fileTime="17d103e5007" infoUpdateTime="17d108d286e"
             numInputs="0" numOutputs="2" isShell="0" uid="acf5bfe8"/>
-    <STATE>191.VMjLgXK....O+fWarAhckI2bo8la8HRLt.iHfTlai8FYo41Y8HRUTYTK3HxO9.BOVMEUy.Ea0cVZtMEcgQWY9vSRC8Vav8lak4Fc9XCLt3hKt3hKt3hKt3hYRUUSTEETIckVwTjQisVTTgkdEYjKAQjYPQSPWgUdMcjKAQjct3hdA4hKt3hKt3hKtnTUv.UQAslXuk0UXoWUFE0YQcEV77RRC8Vav8lak4Fc9vyKVMEUy.Ea0cVZtMEcgQWY9..</STATE>
+    <STATE>346.VMjLgDU....O+fWarAhckI2bo8la8HRLt.iHfTlai8FYo41Y8HRUTYTK3HxO9.BOVMEUy.Ea0cVZtMEcgQWY9vSRC8Vav8lak4Fc9DyM03hUMoFSm4lQt3hKt7zJlcUXxEDZisVRxH1a3vVX3fjTLQmKogjYTwVXogiQY8FMwjENHIUUTkEUKMCR38TNtHzSPUjZTEDLTEEUUoFUSQyPOAUQpQUPvPDRuEkUOgldVIEZtf1XmcmUisFLogzcyHTS1o1PLECT40TLpkWS5A0PNICSogTcyLzS04RUPIUQTMUQQUUTR0zZO4hKt3hKt3hKt3hKtnTUv.UQAslXuk0UXoWUFE0YQcEVtPDTtHzZGI1YMIiXtPDTtLjKPcjKt3hKt3hKt3haTU0PUQDU3sFaicVTWkEQEYzXmEDOujzPu0Fbu4VYtQmO77hUSQ0LPwVcmklaSQWXzUlO..</STATE>
     <LAYOUT>
       <INPUTS/>
       <OUTPUTS>
@@ -74,7 +75,7 @@
       </OUTPUTS>
     </LAYOUT>
   </FILTER>
-  <CONNECTION srcFilter="2" srcChannel="4096" dstFilter="5" dstChannel="4096"/>
-  <CONNECTION srcFilter="5" srcChannel="0" dstFilter="3" dstChannel="0"/>
-  <CONNECTION srcFilter="5" srcChannel="1" dstFilter="3" dstChannel="1"/>
+  <CONNECTION srcFilter="2" srcChannel="4096" dstFilter="6" dstChannel="4096"/>
+  <CONNECTION srcFilter="6" srcChannel="0" dstFilter="3" dstChannel="0"/>
+  <CONNECTION srcFilter="6" srcChannel="1" dstFilter="3" dstChannel="1"/>
 </FILTERGRAPH>

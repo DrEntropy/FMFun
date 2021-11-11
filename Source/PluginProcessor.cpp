@@ -28,10 +28,10 @@ FMFun::FMFun()
         )
          {
     
-    for (auto i = 0; i < 4; ++i)
-        synth.addVoice (new SineWaveVoice(apvts));
+    for (auto i = 0; i < 6; ++i)
+        synth.addVoice (new FMVoice(apvts));
 
-    synth.addSound (new SineWaveSound());
+    synth.addSound (new FMSound());
 }
 
 FMFun::~FMFun()

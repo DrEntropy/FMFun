@@ -5,7 +5,7 @@
               pluginFormats="buildVST3">
   <MAINGROUP id="GKgLrK" name="FMFun">
     <GROUP id="{C212900B-67D5-8E5F-335B-AE8031790155}" name="Source">
-      <FILE id="YLXVJU" name="SineWave.h" compile="0" resource="0" file="Source/SineWave.h"/>
+      <FILE id="YLXVJU" name="FMWave.h" compile="0" resource="0" file="Source/FMWave.h"/>
       <FILE id="nB0eFa" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>
       <FILE id="l4qSAE" name="PluginProcessor.h" compile="0" resource="0"
