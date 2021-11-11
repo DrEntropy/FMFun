@@ -10,7 +10,7 @@
 #include "PluginEditor.h"
 
 //==============================================================================
-SuperAdditiveAudioProcessorEditor::SuperAdditiveAudioProcessorEditor (SuperAdditiveAudioProcessor& p)
+FMFunEditor::FMFunEditor (FMFun& p)
     : AudioProcessorEditor (&p), audioProcessor (p)
 {
     // Make sure that before the constructor has finished, you've set the
@@ -18,12 +18,12 @@ SuperAdditiveAudioProcessorEditor::SuperAdditiveAudioProcessorEditor (SuperAddit
     setSize (400, 300);
 }
 
-SuperAdditiveAudioProcessorEditor::~SuperAdditiveAudioProcessorEditor()
+FMFunEditor::~FMFunEditor()
 {
 }
 
 //==============================================================================
-void SuperAdditiveAudioProcessorEditor::paint (juce::Graphics& g)
+void FMFunEditor::paint (juce::Graphics& g)
 {
     // (Our component is opaque, so we must completely fill the background with a solid colour)
     g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
@@ -33,7 +33,7 @@ void SuperAdditiveAudioProcessorEditor::paint (juce::Graphics& g)
     g.drawFittedText ("Hello World!", getLocalBounds(), juce::Justification::centred, 1);
 }
 
-void SuperAdditiveAudioProcessorEditor::resized()
+void FMFunEditor::resized()
 {
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..

@@ -11,7 +11,7 @@
  
 
 //==============================================================================
-SuperAdditiveAudioProcessor::SuperAdditiveAudioProcessor()
+FMFun::FMFun()
 #ifndef JucePlugin_PreferredChannelConfigurations
      : AudioProcessor (BusesProperties()
                      #if ! JucePlugin_IsMidiEffect
@@ -34,17 +34,17 @@ SuperAdditiveAudioProcessor::SuperAdditiveAudioProcessor()
     synth.addSound (new SineWaveSound());
 }
 
-SuperAdditiveAudioProcessor::~SuperAdditiveAudioProcessor()
+FMFun::~FMFun()
 {
 }
 
 //==============================================================================
-const juce::String SuperAdditiveAudioProcessor::getName() const
+const juce::String FMFun::getName() const
 {
     return JucePlugin_Name;
 }
 
-bool SuperAdditiveAudioProcessor::acceptsMidi() const
+bool FMFun::acceptsMidi() const
 {
    #if JucePlugin_WantsMidiInput
     return true;
@@ -53,7 +53,7 @@ bool SuperAdditiveAudioProcessor::acceptsMidi() const
    #endif
 }
 
-bool SuperAdditiveAudioProcessor::producesMidi() const
+bool FMFun::producesMidi() const
 {
    #if JucePlugin_ProducesMidiOutput
     return true;
@@ -62,7 +62,7 @@ bool SuperAdditiveAudioProcessor::producesMidi() const
    #endif
 }
 
-bool SuperAdditiveAudioProcessor::isMidiEffect() const
+bool FMFun::isMidiEffect() const
 {
    #if JucePlugin_IsMidiEffect
     return true;
@@ -71,51 +71,51 @@ bool SuperAdditiveAudioProcessor::isMidiEffect() const
    #endif
 }
 
-double SuperAdditiveAudioProcessor::getTailLengthSeconds() const
+double FMFun::getTailLengthSeconds() const
 {
     return 0.0;
 }
 
-int SuperAdditiveAudioProcessor::getNumPrograms()
+int FMFun::getNumPrograms()
 {
     return 1;   // NB: some hosts don't cope very well if you tell them there are 0 programs,
                 // so this should be at least 1, even if you're not really implementing programs.
 }
 
-int SuperAdditiveAudioProcessor::getCurrentProgram()
+int FMFun::getCurrentProgram()
 {
     return 0;
 }
 
-void SuperAdditiveAudioProcessor::setCurrentProgram (int index)
+void FMFun::setCurrentProgram (int index)
 {
 }
 
-const juce::String SuperAdditiveAudioProcessor::getProgramName (int index)
+const juce::String FMFun::getProgramName (int index)
 {
     return {};
 }
 
-void SuperAdditiveAudioProcessor::changeProgramName (int index, const juce::String& newName)
+void FMFun::changeProgramName (int index, const juce::String& newName)
 {
 }
 
 //==============================================================================
-void SuperAdditiveAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
+void FMFun::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
     synth.setCurrentPlaybackSampleRate (sampleRate);
 }
 
-void SuperAdditiveAudioProcessor::releaseResources()
+void FMFun::releaseResources()
 {
     // When playback stops, you can use this as an opportunity to free up any
     // spare memory, etc.
 }
 
 #ifndef JucePlugin_PreferredChannelConfigurations
-bool SuperAdditiveAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
+bool FMFun::isBusesLayoutSupported (const BusesLayout& layouts) const
 {
   #if JucePlugin_IsMidiEffect
     juce::ignoreUnused (layouts);
@@ -140,7 +140,7 @@ bool SuperAdditiveAudioProcessor::isBusesLayoutSupported (const BusesLayout& lay
 }
 #endif
 
-void SuperAdditiveAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
+void FMFun::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
     juce::ScopedNoDenormals noDenormals;
     auto totalNumInputChannels  = getTotalNumInputChannels();
@@ -169,25 +169,25 @@ void SuperAdditiveAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer
 }
 
 //==============================================================================
-bool SuperAdditiveAudioProcessor::hasEditor() const
+bool FMFun::hasEditor() const
 {
     return true; // (change this to false if you choose to not supply an editor)
 }
 
-juce::AudioProcessorEditor* SuperAdditiveAudioProcessor::createEditor()
+juce::AudioProcessorEditor* FMFun::createEditor()
 {
-    return new SuperAdditiveAudioProcessorEditor (*this);
+    return new FMFunEditor (*this);
 }
  // these are copied from teh juce tutorial.
 //==============================================================================
-void SuperAdditiveAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
+void FMFun::getStateInformation (juce::MemoryBlock& destData)
 {
     auto state = apvts.copyState();
     std::unique_ptr<juce::XmlElement> xml (state.createXml());
     copyXmlToBinary (*xml, destData);
 }
 
-void SuperAdditiveAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
+void FMFun::setStateInformation (const void* data, int sizeInBytes)
 {
     std::unique_ptr<juce::XmlElement> xmlState (getXmlFromBinary (data, sizeInBytes));
     if (xmlState.get() != nullptr)
@@ -199,5 +199,5 @@ void SuperAdditiveAudioProcessor::setStateInformation (const void* data, int siz
 // This creates new instances of the plugin..
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
-    return new SuperAdditiveAudioProcessor();
+    return new FMFun();
 }
