@@ -101,10 +101,21 @@ void FMFun::changeProgramName (int index, const juce::String& newName)
 }
 
 //==============================================================================
-void FMFun::prepareToPlay (double sampleRate, int samplesPerBlock)
+void FMFun::prepareToPlay ( double sampleRate, int samplesPerBlock)
 {
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
+    
+    // prepare the voices, mostly the dsp. I am not a big fan of using the cast here,
+    // TODO: Make a proper synth subclass to handle this wihtout a cast.
+    for(int i = 0; i< synth.getNumVoices();++i)
+    {
+        // for now i hardwire the output channels to 2.   could use
+        //static_cast<juce::uint32>( getMainBusNumOutputChannels())
+        juce::dsp::ProcessSpec spec{static_cast<float>(sampleRate),static_cast<juce::uint32>(samplesPerBlock),2};
+        static_cast<FMVoice*>(synth.getVoice(i))->prepare(spec);
+    }
+    
     synth.setCurrentPlaybackSampleRate (sampleRate);
 }
 

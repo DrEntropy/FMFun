@@ -25,9 +25,19 @@ struct FMVoice   : public juce::SynthesiserVoice
    
     }
     
+    // for dsp
+    
+    void prepare(const juce::dsp::ProcessSpec &spec) {
+        //
+        filter.prepare(spec);
+        filter.setMode(juce::dsp::LadderFilterMode::LPF12);
+    }
+    
     void setCurrentPlaybackSampleRate (double newRate) override {
         // not sure this is the best place for this .
         // hardwired 50 ms transition rate.
+        // this should be called at start up
+       //filter.prepare({newRate,ap.getMaximumBlockSize(),ap.getMainBusNumOutputChannels()});
         
         if(newRate>0)
         {
@@ -52,13 +62,13 @@ struct FMVoice   : public juce::SynthesiserVoice
         currentAngle = 0.0;
         level = velocity * 0.15;
 //        tailOff = 0.0;
-      
 
         auto cyclesPerSecond = juce::MidiMessage::getMidiNoteInHertz (midiNoteNumber);
         auto cyclesPerSample = cyclesPerSecond / getSampleRate();
 
         angleDelta = cyclesPerSample * 2.0 * juce::MathConstants<double>::pi;
         ampEnv.noteOn();
+        filter.setCutoffFrequencyHz(100.0f);
     }
 
     void stopNote (float /*velocity*/, bool allowTailOff) override
@@ -73,6 +83,7 @@ struct FMVoice   : public juce::SynthesiserVoice
         {
             ampEnv.reset();
             clearCurrentNote();
+            filter.reset();
             angleDelta = 0.0;
         }
     }
@@ -91,26 +102,37 @@ struct FMVoice   : public juce::SynthesiserVoice
             s_mI.setTargetValue(newmI);
             float mI;
             
-            if (ampEnv.isActive()) // [7]
+            if (ampEnv.isActive())
             {
-               
-                while (--numSamples >= 0)
+                auto currSampleNum = startSample;
+                auto sampleCount = numSamples;
+                while (--sampleCount >= 0)
                 {
                     mI = s_mI.getNextValue();
                     auto currentSample = (float) (std::sin (currentAngle + mI*std::sin(currentAngle)) * level * ampEnv.getNextSample());
-
                     for (auto i = outputBuffer.getNumChannels(); --i >= 0;)
-                        outputBuffer.addSample (i, startSample, currentSample);
+                        outputBuffer.addSample (i, currSampleNum, currentSample);
 
                     currentAngle += angleDelta;
-                    ++startSample;
+                    ++currSampleNum;
 
  
                 }
+                // filter processing
+                // basically copied out of the tutorial after trying for about 1 hour to figure it out
+                // from the juce documentation.  Why not have a consistent interface?
+                auto block = juce::dsp::AudioBlock<float> (outputBuffer);
+                 
+                auto blockToUse = block.getSubBlock ((size_t) startSample, (size_t) numSamples);
+                auto contextToUse = juce::dsp::ProcessContextReplacing<float> (blockToUse);
+                // this works but is not polyphonic since i replace the context completely.
+               // filter.process(contextToUse);
             }
             else
             {
-                clearCurrentNote(); // [9]
+                clearCurrentNote();
+                //not sure this is needed.
+                filter.reset();
 
                 angleDelta = 0.0;
  
@@ -122,10 +144,18 @@ private:
     double currentAngle = 0.0, angleDelta = 0.0, level = 0.0;
 //    double tailOff = 0.0;
     
+  
+    
+    
     juce::AudioProcessorValueTreeState& apvts;
+    
     
     //smothing variables starts at zero
     juce::SmoothedValue<float> s_mI{0.f};
+    
+    
+    // ladder filter for each voice
+     juce::dsp::LadderFilter<float> filter{};
     
     juce::ADSR ampEnv{};
     juce::ADSR modEnv{};
