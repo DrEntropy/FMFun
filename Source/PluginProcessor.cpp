@@ -188,7 +188,7 @@ bool FMFun::hasEditor() const
 
 juce::AudioProcessorEditor* FMFun::createEditor()
 {
-    return new FMFunEditor (*this);
+    return new FMFunEditor (*this, apvts);
 }
  // these are copied from teh juce tutorial.
 //==============================================================================

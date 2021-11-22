@@ -17,7 +17,8 @@
 class FMFunEditor  : public juce::AudioProcessorEditor
 {
 public:
-    FMFunEditor (FMFun&);
+    using APVTS = juce::AudioProcessorValueTreeState;
+    FMFunEditor (FMFun&,APVTS&);
     ~FMFunEditor() override;
 
     //==============================================================================
@@ -28,6 +29,15 @@ private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
     FMFun& audioProcessor;
+    
+
+    
+    APVTS& apvts;
+    
+    typedef juce::AudioProcessorValueTreeState::SliderAttachment SliderAttachment;
+    
+    juce::Slider mISlider;
+    std::unique_ptr<SliderAttachment> mIAttachment;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FMFunEditor)
 };
