@@ -136,28 +136,14 @@ struct FMVoice   : public juce::SynthesiserVoice
                  // this mightbe superflous at this point.
                 auto blockToUse = block.getSubBlock ((size_t) 0, (size_t) numSamples);
                 auto contextToUse = juce::dsp::ProcessContextReplacing<float> (blockToUse);
-                // this works but is not polyphonic since i replace the context completely.
+                
                filter.process(contextToUse);
                 
+                // add result to output buffer 
                 
-                // now add the samples to the buffer in the most painful way possible
-                //TODO there must be a better way :) At very least use read and write pointers
-               currSampleNum = startSample;
-               sampleCount = numSamples;
-                while (--sampleCount >= 0)
-                {
-                     
-                    
-                    for (auto i = numChannels ; --i >= 0;)
-                    {
-                        auto currentSample = tempBuff.getSample(i, currSampleNum-startSample);
-                        outputBuffer.addSample (i, currSampleNum, currentSample);
-                    }
+                for (auto i = numChannels;--i >= 0;)
+                    outputBuffer.addFrom(i, startSample, tempBuff, i, 0, numSamples);
  
-                    ++currSampleNum;
-
- 
-                }
             }
             else
             {
