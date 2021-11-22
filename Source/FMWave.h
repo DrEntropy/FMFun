@@ -30,7 +30,7 @@ struct FMVoice   : public juce::SynthesiserVoice
     void prepare(const juce::dsp::ProcessSpec &spec) {
         //
         filter.prepare(spec);
-        filter.setMode(juce::dsp::LadderFilterMode::LPF12);
+        filter.setMode(juce::dsp::LadderFilterMode::LPF24);
     }
     
     void setCurrentPlaybackSampleRate (double newRate) override {
@@ -44,7 +44,7 @@ struct FMVoice   : public juce::SynthesiserVoice
           s_mI.reset(newRate,0.050f);
             ampEnv.setSampleRate(newRate);
             modEnv.setSampleRate(newRate);
-         ampEnv.setParameters(juce::ADSR::Parameters(.01f,.1f,0.0f,.1f));
+         ampEnv.setParameters(juce::ADSR::Parameters(.01f,.1f,0.8f,.1f));
          modEnv.setParameters(juce::ADSR::Parameters(.1f,.1f,1.0f,.1f));
         }
         // call super
@@ -68,7 +68,7 @@ struct FMVoice   : public juce::SynthesiserVoice
 
         angleDelta = cyclesPerSample * 2.0 * juce::MathConstants<double>::pi;
         ampEnv.noteOn();
-        filter.setCutoffFrequencyHz(100.0f);
+        //filter.setCutoffFrequencyHz(1000.0f);
     }
 
     void stopNote (float /*velocity*/, bool allowTailOff) override
@@ -95,23 +95,34 @@ struct FMVoice   : public juce::SynthesiserVoice
     {
         if (angleDelta != 0.0)
         {
-            // TODO, smooth this out.
+             
             // see https://docs.juce.com/master/tutorial_audio_processor_value_tree_state.html
             float newmI = apvts.getRawParameterValue("mI")->load();
-          
             s_mI.setTargetValue(newmI);
+            
+            
+            float cutOff = apvts.getRawParameterValue("cutOff")->load();
+            
+            // TODO add smoothing, except seems like it already is smoothed.... ??
+            filter.setCutoffFrequencyHz(cutOff);
+          
             float mI;
             
             if (ampEnv.isActive())
             {
-                auto currSampleNum = startSample;
+                auto numChannels = outputBuffer.getNumChannels();
+                
+                
+                // generate the fm wave into a temporary buffer prior to DSP processing.
+                juce::AudioBuffer<float> tempBuff(numChannels,numSamples);
+                auto currSampleNum = 0;
                 auto sampleCount = numSamples;
                 while (--sampleCount >= 0)
                 {
                     mI = s_mI.getNextValue();
                     auto currentSample = (float) (std::sin (currentAngle + mI*std::sin(currentAngle)) * level * ampEnv.getNextSample());
-                    for (auto i = outputBuffer.getNumChannels(); --i >= 0;)
-                        outputBuffer.addSample (i, currSampleNum, currentSample);
+                    for (auto i = numChannels; --i >= 0;)
+                        tempBuff.setSample (i, currSampleNum, currentSample);
 
                     currentAngle += angleDelta;
                     ++currSampleNum;
@@ -121,12 +132,32 @@ struct FMVoice   : public juce::SynthesiserVoice
                 // filter processing
                 // basically copied out of the tutorial after trying for about 1 hour to figure it out
                 // from the juce documentation.  Why not have a consistent interface?
-                auto block = juce::dsp::AudioBlock<float> (outputBuffer);
-                 
-                auto blockToUse = block.getSubBlock ((size_t) startSample, (size_t) numSamples);
+                auto block = juce::dsp::AudioBlock<float> (tempBuff);
+                 // this mightbe superflous at this point.
+                auto blockToUse = block.getSubBlock ((size_t) 0, (size_t) numSamples);
                 auto contextToUse = juce::dsp::ProcessContextReplacing<float> (blockToUse);
                 // this works but is not polyphonic since i replace the context completely.
-               // filter.process(contextToUse);
+               filter.process(contextToUse);
+                
+                
+                // now add the samples to the buffer in the most painful way possible
+                //TODO there must be a better way :) At very least use read and write pointers
+               currSampleNum = startSample;
+               sampleCount = numSamples;
+                while (--sampleCount >= 0)
+                {
+                     
+                    
+                    for (auto i = numChannels ; --i >= 0;)
+                    {
+                        auto currentSample = tempBuff.getSample(i, currSampleNum-startSample);
+                        outputBuffer.addSample (i, currSampleNum, currentSample);
+                    }
+ 
+                    ++currSampleNum;
+
+ 
+                }
             }
             else
             {
