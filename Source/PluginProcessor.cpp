@@ -111,9 +111,9 @@ void FMFun::prepareToPlay ( double sampleRate, int samplesPerBlock)
     // TODO: Make a proper synth subclass to handle this wihtout a cast.
     for(int i = 0; i< synth.getNumVoices();++i)
     {
-        // for now i hardwire the output channels to 2.   could use
+        // for now i hardwire the output channels to 1 because the synth is mono internally for now.
         //static_cast<juce::uint32>( getMainBusNumOutputChannels())
-        juce::dsp::ProcessSpec spec{static_cast<float>(sampleRate),static_cast<juce::uint32>(samplesPerBlock),2};
+        juce::dsp::ProcessSpec spec{static_cast<float>(sampleRate),static_cast<juce::uint32>(samplesPerBlock),1};
         static_cast<FMVoice*>(synth.getVoice(i))->prepare(spec);
     }
     

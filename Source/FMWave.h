@@ -114,35 +114,35 @@ struct FMVoice   : public juce::SynthesiserVoice
                 
                 
                 // generate the fm wave into a temporary buffer prior to DSP processing.
-                juce::AudioBuffer<float> tempBuff(numChannels,numSamples);
+                // one channel only
+                juce::AudioBuffer<float> tempBuff(1,numSamples);
                 auto currSampleNum = 0;
                 auto sampleCount = numSamples;
                 while (--sampleCount >= 0)
                 {
                     mI = s_mI.getNextValue();
                     auto currentSample = (float) (std::sin (currentAngle + mI*std::sin(currentAngle)) * level * ampEnv.getNextSample());
-                    for (auto i = numChannels; --i >= 0;)
-                        tempBuff.setSample (i, currSampleNum, currentSample);
+                    tempBuff.setSample(0, currSampleNum, currentSample);
 
                     currentAngle += angleDelta;
                     ++currSampleNum;
 
  
                 }
-                // filter processing
+                // filter processing - single channel
                 // basically copied out of the tutorial after trying for about 1 hour to figure it out
                 // from the juce documentation.  Why not have a consistent interface?
                 auto block = juce::dsp::AudioBlock<float> (tempBuff);
                  // this mightbe superflous at this point.
-                auto blockToUse = block.getSubBlock ((size_t) 0, (size_t) numSamples);
-                auto contextToUse = juce::dsp::ProcessContextReplacing<float> (blockToUse);
+                //auto blockToUse = block.getSubBlock ((size_t) 0, (size_t) numSamples);
+                auto contextToUse = juce::dsp::ProcessContextReplacing<float> (block);
                 
                filter.process(contextToUse);
                 
                 // add result to output buffer 
                 
                 for (auto i = numChannels;--i >= 0;)
-                    outputBuffer.addFrom(i, startSample, tempBuff, i, 0, numSamples);
+                    outputBuffer.addFrom(i, startSample, tempBuff, 0, 0, numSamples);
  
             }
             else
