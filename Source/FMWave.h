@@ -62,10 +62,10 @@ struct FMVoice   : public juce::SynthesiserVoice
         currentAngle = 0.0;
         level = velocity * 0.15;
 //        tailOff = 0.0;
-
+        
         auto cyclesPerSecond = juce::MidiMessage::getMidiNoteInHertz (midiNoteNumber);
         auto cyclesPerSample = cyclesPerSecond / getSampleRate();
-
+        // base frequency
         angleDelta = cyclesPerSample * 2.0 * juce::MathConstants<double>::pi;
         ampEnv.noteOn();
         //filter.setCutoffFrequencyHz(1000.0f);
@@ -88,7 +88,10 @@ struct FMVoice   : public juce::SynthesiserVoice
         }
     }
 
-    void pitchWheelMoved (int) override      {}
+    void pitchWheelMoved (int value) override      {
+        pitchShift = value/128.0;
+        //
+    }
     void controllerMoved (int, int) override {}
 
     void renderNextBlock (juce::AudioSampleBuffer& outputBuffer, int startSample, int numSamples) override
@@ -96,6 +99,13 @@ struct FMVoice   : public juce::SynthesiserVoice
         if (angleDelta != 0.0)
         {
              
+            // pitch may have shifted
+            
+            float testPitch =  apvts.getRawParameterValue("pitchTest")->load();
+            
+            // testPitch is for testing changing the pitch without my keyboard
+
+            float currAngleDelta = angleDelta * pow(2.0f,testPitch/12.0); // one semitone. this slow
             // see https://docs.juce.com/master/tutorial_audio_processor_value_tree_state.html
             float newmI = apvts.getRawParameterValue("mI")->load();
             s_mI.setTargetValue(newmI);
@@ -124,7 +134,7 @@ struct FMVoice   : public juce::SynthesiserVoice
                     auto currentSample = (float) (std::sin (currentAngle + mI*std::sin(currentAngle)) * level * ampEnv.getNextSample());
                     tempBuff.setSample(0, currSampleNum, currentSample);
 
-                    currentAngle += angleDelta;
+                    currentAngle += currAngleDelta;
                     ++currSampleNum;
 
  
@@ -161,7 +171,7 @@ private:
     double currentAngle = 0.0, angleDelta = 0.0, level = 0.0;
 //    double tailOff = 0.0;
     
-  
+    double pitchShift =0.0;
     
     
     juce::AudioProcessorValueTreeState& apvts;
