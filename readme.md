@@ -5,8 +5,8 @@
 * see the two block diagrams
 
 * TODO:// 
+    * Add parameters for envolopes, but can i use subtree for this??
     * Add pitch envelope 
-    * Add parameters for envelopes and filters 
     * Add filter envelope 
     * Not sure if i should also add lfo and matrix for that... thinks are starting to get tedious for this demo project!
     * Refactor main oscliator and add second copy- use subtrees?
