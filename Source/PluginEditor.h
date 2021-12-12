@@ -36,6 +36,8 @@ private:
     
     typedef juce::AudioProcessorValueTreeState::SliderAttachment SliderAttachment;
     
+    
+    // define the controls.... will be so many!
     juce::Slider mISlider;
     std::unique_ptr<SliderAttachment> mIAttachment;
 
