@@ -11,11 +11,23 @@
  
 juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout()
 {
+    
+    
     juce::AudioProcessorValueTreeState::ParameterLayout layout;
+    
+    //TODO Factor this into a function to make multiples when IF i get it working
+    
+     
+  
     
     layout.add(std::make_unique<juce::AudioParameterFloat> ("mI","Index",juce::NormalisableRange<float>(0,10),0));
     layout.add(std::make_unique<juce::AudioParameterFloat> ("cutOff","cutOff",juce::NormalisableRange<float>(20.f,20000.f,0,0.2f),1000.f));
     layout.add(std::make_unique<juce::AudioParameterFloat> ("pitchTest","pitchTest",juce::NormalisableRange<float>(-1.0f,1.0f),0.f));
+    layout.add(std::make_unique<juce::AudioParameterFloat> ("A_amp","A",juce::NormalisableRange<float>(0,1),0));
+    layout.add(std::make_unique<juce::AudioParameterFloat> ("D_amp","D",juce::NormalisableRange<float>(0,1),0));
+    layout.add(std::make_unique<juce::AudioParameterFloat> ("S_amp","S",juce::NormalisableRange<float>(0,1),0));
+    layout.add(std::make_unique<juce::AudioParameterFloat> ("R_amp","R",juce::NormalisableRange<float>(0,1),0));
+    
  
     return layout;
 }

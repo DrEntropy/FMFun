@@ -44,7 +44,8 @@ struct FMVoice   : public juce::SynthesiserVoice
           s_mI.reset(newRate,0.050f);
             ampEnv.setSampleRate(newRate);
             modEnv.setSampleRate(newRate);
-         ampEnv.setParameters(juce::ADSR::Parameters(.01f,.1f,0.8f,.1f));
+            setAmpEnvelop();
+            // note that this is not even used yet.
          modEnv.setParameters(juce::ADSR::Parameters(.1f,.1f,1.0f,.1f));
         }
         // call super
@@ -67,7 +68,11 @@ struct FMVoice   : public juce::SynthesiserVoice
         auto cyclesPerSample = cyclesPerSecond / getSampleRate();
         // base frequency
         angleDelta = cyclesPerSample * 2.0 * juce::MathConstants<double>::pi;
+        
+        // get ampenv parameters and set them.
+        setAmpEnvelop();
         ampEnv.noteOn();
+        modEnv.noteOn();
         //filter.setCutoffFrequencyHz(1000.0f);
     }
 
@@ -76,12 +81,14 @@ struct FMVoice   : public juce::SynthesiserVoice
         if (allowTailOff)
         {
             ampEnv.noteOff();
+            modEnv.noteOff();
 //            if (tailOff == 0.0)
 //                tailOff = 1.0;
         }
         else
         {
             ampEnv.reset();
+            modEnv.reset();
             clearCurrentNote();
             filter.reset();
             angleDelta = 0.0;
@@ -168,6 +175,16 @@ struct FMVoice   : public juce::SynthesiserVoice
     }
 
 private:
+    
+    
+    void setAmpEnvelop(){
+       // apvts.getRawParameterValue("A_amp")->load();
+        ampEnv.setParameters(juce::ADSR::Parameters(apvts.getRawParameterValue("A_amp")->load(),
+                                                    apvts.getRawParameterValue("D_amp")->load(),
+                                                    apvts.getRawParameterValue("S_amp")->load(),
+                                                    apvts.getRawParameterValue("R_amp")->load()));
+    }
+    
     double currentAngle = 0.0, angleDelta = 0.0, level = 0.0;
 //    double tailOff = 0.0;
     
