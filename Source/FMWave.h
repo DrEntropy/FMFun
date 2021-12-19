@@ -45,8 +45,8 @@ struct FMVoice   : public juce::SynthesiserVoice
             ampEnv.setSampleRate(newRate);
             modEnv.setSampleRate(newRate);
             setAmpEnvelop();
-            // note that this is not even used yet.
-         modEnv.setParameters(juce::ADSR::Parameters(.1f,.1f,1.0f,.1f));
+            setModEnvelop();
+        // modEnv.setParameters(juce::ADSR::Parameters(.1f,.1f,1.0f,.1f));
         }
         // call super
         juce::SynthesiserVoice::setCurrentPlaybackSampleRate(newRate);
@@ -73,13 +73,20 @@ struct FMVoice   : public juce::SynthesiserVoice
         
         // get ampenv parameters and set them.
         setAmpEnvelop();
+        setModEnvelop();
+        
+        // reset the envelopes in case we got stolen note. Should happen with stopnote,
+        // but without this i noted that the envelope does not reset when playing notes rapidly.
+        ampEnv.reset(); modEnv.reset();
+        
+        
         ampEnv.noteOn();
         modEnv.noteOn();
-        float cutOff = apvts.getRawParameterValue("cutOff")->load();
+         
         
         // Jump smoothed parameters to current value
         s_mI.setCurrentAndTargetValue(apvts.getRawParameterValue("mI")->load());
-        filter.setCutoffFrequencyHz(cutOff);
+        filter.setCutoffFrequencyHz(apvts.getRawParameterValue("cutOff")->load());
         filter.reset();
         //filter.setCutoffFrequencyHz(1000.0f);
     }
@@ -146,7 +153,8 @@ struct FMVoice   : public juce::SynthesiserVoice
                 while (--sampleCount >= 0)
                 {
                     mI = s_mI.getNextValue();
-                    auto currentSample = (float) (std::sin (currentAngle + mI*std::sin(currentAngle)) * level * ampEnv.getNextSample());
+                    auto currentSample = (float) (std::sin (currentAngle + modEnv.getNextSample() *
+                                                mI * std::sin(currentAngle)) * level * ampEnv.getNextSample());
                     tempBuff.setSample(0, currSampleNum, currentSample);
 
                     currentAngle += currAngleDelta;
@@ -191,6 +199,13 @@ private:
                                                     apvts.getRawParameterValue("D_amp")->load(),
                                                     apvts.getRawParameterValue("S_amp")->load(),
                                                     apvts.getRawParameterValue("R_amp")->load()));
+    }
+    void setModEnvelop(){
+       // apvts.getRawParameterValue("A_amp")->load();
+        ampEnv.setParameters(juce::ADSR::Parameters(apvts.getRawParameterValue("A_mod")->load(),
+                                                    apvts.getRawParameterValue("D_mod")->load(),
+                                                    apvts.getRawParameterValue("S_mod")->load(),
+                                                    apvts.getRawParameterValue("R_mod")->load()));
     }
     
     double currentAngle = 0.0, angleDelta = 0.0, level = 0.0;

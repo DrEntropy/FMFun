@@ -32,7 +32,8 @@ juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout()
     addEnvelope(layout,"amp");
     //modulator envelope 
     addEnvelope(layout,"mod");
-    
+    // filter envelope
+    // pitch envelope
  
     return layout;
 }
