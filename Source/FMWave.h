@@ -69,10 +69,18 @@ struct FMVoice   : public juce::SynthesiserVoice
         // base frequency
         angleDelta = cyclesPerSample * 2.0 * juce::MathConstants<double>::pi;
         
+       
+        
         // get ampenv parameters and set them.
         setAmpEnvelop();
         ampEnv.noteOn();
         modEnv.noteOn();
+        float cutOff = apvts.getRawParameterValue("cutOff")->load();
+        
+        // Jump smoothed parameters to current value
+        s_mI.setCurrentAndTargetValue(apvts.getRawParameterValue("mI")->load());
+        filter.setCutoffFrequencyHz(cutOff);
+        filter.reset();
         //filter.setCutoffFrequencyHz(1000.0f);
     }
 
@@ -120,7 +128,7 @@ struct FMVoice   : public juce::SynthesiserVoice
             
             float cutOff = apvts.getRawParameterValue("cutOff")->load();
             
-            // TODO add smoothing, except seems like it already is smoothed.... ??
+            // note that the latter filter has built in .05 smoothing ...its in the source.
             filter.setCutoffFrequencyHz(cutOff);
           
             float mI;
