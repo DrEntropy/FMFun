@@ -27,7 +27,9 @@ juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout()
     
     layout.add(std::make_unique<juce::AudioParameterFloat> ("mI","Index",juce::NormalisableRange<float>(0,10),0));
     layout.add(std::make_unique<juce::AudioParameterFloat> ("cutOff","cutOff",juce::NormalisableRange<float>(20.f,20000.f,0,0.2f),1000.f));
-    layout.add(std::make_unique<juce::AudioParameterFloat> ("pitchTest","pitchTest",juce::NormalisableRange<float>(-1.0f,1.0f),0.f));
+    // four octaves, note that at extremes there will be aliasing and it sound funky as f.
+    layout.add(std::make_unique<juce::AudioParameterFloat> ("pitchMod","pitchMod",juce::NormalisableRange<float>(-4.0f,4.0f),0.f));
+    layout.add(std::make_unique<juce::AudioParameterFloat> ("filterMod","filterMod",juce::NormalisableRange<float>(0.0f,1.0f),0.f));
     // Amplitude envelope
     addEnvelope(layout,"amp");
     //modulator envelope 

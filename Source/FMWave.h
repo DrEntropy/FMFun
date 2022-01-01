@@ -67,7 +67,7 @@ struct FMVoice   : public juce::SynthesiserVoice
         level = velocity * 0.15;
 //        tailOff = 0.0;
         
-        auto cyclesPerSecond = juce::MidiMessage::getMidiNoteInHertz (midiNoteNumber);
+        cyclesPerSecond = juce::MidiMessage::getMidiNoteInHertz (midiNoteNumber);
         auto cyclesPerSample = cyclesPerSecond / getSampleRate();
         // base frequency
         angleDelta = cyclesPerSample * 2.0 * juce::MathConstants<double>::pi;
@@ -128,22 +128,20 @@ struct FMVoice   : public juce::SynthesiserVoice
         if (angleDelta != 0.0)
         {
              
-            // pitch may have shifted
+            // I might want a smoother for pitchModAmt and filter mod amt
             
-            float testPitch =  apvts.getRawParameterValue("pitchTest")->load();
-            
-            // testPitch is for testing changing the pitch without my keyboard
-
-            float currAngleDelta = angleDelta * pow(2.0f,testPitch/12.0); // one semitone. this slow
+            float pitchModAmt =  apvts.getRawParameterValue("pitchMod")->load();
+            float filterModAmt = apvts.getRawParameterValue("filterMod")->load();
+        
             // see https://docs.juce.com/master/tutorial_audio_processor_value_tree_state.html
             float newmI = apvts.getRawParameterValue("mI")->load();
             s_mI.setTargetValue(newmI);
             
+            // compute filter mod.
+            float filterMod = filterEnv.getNextSample()*filterModAmt;
+            float cutOffSetting =  apvts.getRawParameterValue("cutOff")->load();
             
-            float cutOff = apvts.getRawParameterValue("cutOff")->load();
-            
-            // here is where i will put in the filter envelope, not we will need to fast forward samples.
-            
+            float cutOff = juce::jlimit(20.0,20000.0,cutOffSetting+filterMod*20000.0);
             // note that the latter filter has built in .05 smoothing ...its in the source.
             filter.setCutoffFrequencyHz(cutOff);
           
@@ -161,6 +159,12 @@ struct FMVoice   : public juce::SynthesiserVoice
                 auto sampleCount = numSamples;
                 while (--sampleCount >= 0)
                 {
+                    // advance the filter envelope.
+                    // TODO fix the off by one sample issue here. or not.
+                    filterEnv.getNextSample();
+                    // maybe only do this once per block??? Consider, do as i did the filter.
+                    float pitchMod = pitchModAmt*pitchEnv.getNextSample();
+                    float currAngleDelta = angleDelta * pow(2.0f,pitchMod); // max mod is an octave for now.change this to use left shift?
                     mI = s_mI.getNextValue();
                     auto currentSample = (float) (std::sin (currentAngle + modEnv.getNextSample() *
                                                 mI * std::sin(currentAngle)) * level * ampEnv.getNextSample());
@@ -234,6 +238,7 @@ private:
 //    double tailOff = 0.0;
     
     double pitchShift =0.0;
+    double cyclesPerSecond=0.0; // current frequency
     
     
     juce::AudioProcessorValueTreeState& apvts;
