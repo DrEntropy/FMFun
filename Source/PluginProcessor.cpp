@@ -11,9 +11,9 @@
 
 void addEnvelope(juce::AudioProcessorValueTreeState::ParameterLayout& layout,std::string name){
     layout.add(std::make_unique<juce::AudioParameterFloat> ("A_"+name,"A-"+name,juce::NormalisableRange<float>(0,1),0));
-    layout.add(std::make_unique<juce::AudioParameterFloat> ("D_"+name,"D",juce::NormalisableRange<float>(0,1),0));
-    layout.add(std::make_unique<juce::AudioParameterFloat> ("S_"+name,"S",juce::NormalisableRange<float>(0,1),0));
-    layout.add(std::make_unique<juce::AudioParameterFloat> ("R_"+name,"R",juce::NormalisableRange<float>(0,1),0));
+    layout.add(std::make_unique<juce::AudioParameterFloat> ("D_"+name,"D-"+name,juce::NormalisableRange<float>(0,1),0));
+    layout.add(std::make_unique<juce::AudioParameterFloat> ("S_"+name,"S-"+name,juce::NormalisableRange<float>(0,1),0));
+    layout.add(std::make_unique<juce::AudioParameterFloat> ("R_"+name,"R-"+name,juce::NormalisableRange<float>(0,1),0));
 }
  
 juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout()
@@ -33,7 +33,9 @@ juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout()
     //modulator envelope 
     addEnvelope(layout,"mod");
     // filter envelope
+    addEnvelope(layout,"filter");
     // pitch envelope
+    addEnvelope(layout,"pitch");
  
     return layout;
 }

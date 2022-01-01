@@ -44,8 +44,11 @@ struct FMVoice   : public juce::SynthesiserVoice
           s_mI.reset(newRate,0.050f);
             ampEnv.setSampleRate(newRate);
             modEnv.setSampleRate(newRate);
-            setAmpEnvelop();
-            setModEnvelop();
+            pitchEnv.setSampleRate(newRate);
+            filterEnv.setSampleRate(newRate);
+            
+            setupEnvelopes();
+          
         // modEnv.setParameters(juce::ADSR::Parameters(.1f,.1f,1.0f,.1f));
         }
         // call super
@@ -71,17 +74,17 @@ struct FMVoice   : public juce::SynthesiserVoice
         
        
         
-        // get ampenv parameters and set them.
-        setAmpEnvelop();
-        setModEnvelop();
+        // get env parameters and reset them.
+  
+        setupEnvelopes();
         
-        // reset the envelopes in case we got stolen note. Should happen with stopnote,
-        // but without this i noted that the envelope does not reset when playing notes rapidly.
-        ampEnv.reset(); modEnv.reset();
+        // Start envelopes running
         
         
         ampEnv.noteOn();
         modEnv.noteOn();
+        pitchEnv.noteOn();
+        filterEnv.noteOn();
          
         
         // Jump smoothed parameters to current value
@@ -97,6 +100,8 @@ struct FMVoice   : public juce::SynthesiserVoice
         {
             ampEnv.noteOff();
             modEnv.noteOff();
+            filterEnv.noteOff();
+            pitchEnv.noteOff();
 //            if (tailOff == 0.0)
 //                tailOff = 1.0;
         }
@@ -104,6 +109,8 @@ struct FMVoice   : public juce::SynthesiserVoice
         {
             ampEnv.reset();
             modEnv.reset();
+            pitchEnv.reset();
+            filterEnv.reset();
             clearCurrentNote();
             filter.reset();
             angleDelta = 0.0;
@@ -134,6 +141,8 @@ struct FMVoice   : public juce::SynthesiserVoice
             
             
             float cutOff = apvts.getRawParameterValue("cutOff")->load();
+            
+            // here is where i will put in the filter envelope, not we will need to fast forward samples.
             
             // note that the latter filter has built in .05 smoothing ...its in the source.
             filter.setCutoffFrequencyHz(cutOff);
@@ -192,21 +201,34 @@ struct FMVoice   : public juce::SynthesiserVoice
 
 private:
     
+    void setupEnvelopes(){
+        setEnvelope(ampEnv,"amp");
+        setEnvelope(modEnv,"mod");
+        setEnvelope(pitchEnv,"pitch");
+        setEnvelope(filterEnv,"filter");
+        // reset the envelopes in case we got stolen note. Should happen with stopnote,
+        // but without this i noted that the envelope does not reset when playing notes rapidly.
+        ampEnv.reset(); modEnv.reset();pitchEnv.reset(); filterEnv.reset();
+    }
+    void setEnvelope(juce::ADSR& env,std::string name){
+       
+        // this is a bit of a hack, and not really a safe way to do this.
+        // maybe better to make a subclass of ADSR that include refs to the parameters
+ 
+         env.setParameters(juce::ADSR::Parameters(apvts.getRawParameterValue("A_"+name)->load(),
+                                                    apvts.getRawParameterValue("D_"+name)->load(),
+                                                    apvts.getRawParameterValue("S_"+name)->load(),
+                                                    apvts.getRawParameterValue("R_"+name)->load()));
+    }
     
-    void setAmpEnvelop(){
-       // apvts.getRawParameterValue("A_amp")->load();
-        ampEnv.setParameters(juce::ADSR::Parameters(apvts.getRawParameterValue("A_amp")->load(),
-                                                    apvts.getRawParameterValue("D_amp")->load(),
-                                                    apvts.getRawParameterValue("S_amp")->load(),
-                                                    apvts.getRawParameterValue("R_amp")->load()));
-    }
-    void setModEnvelop(){
-       // apvts.getRawParameterValue("A_amp")->load();
-        ampEnv.setParameters(juce::ADSR::Parameters(apvts.getRawParameterValue("A_mod")->load(),
-                                                    apvts.getRawParameterValue("D_mod")->load(),
-                                                    apvts.getRawParameterValue("S_mod")->load(),
-                                                    apvts.getRawParameterValue("R_mod")->load()));
-    }
+    
+//    void setModEnvelop(){
+//       // apvts.getRawParameterValue("A_amp")->load();
+//        modEnv.setParameters(juce::ADSR::Parameters(apvts.getRawParameterValue("A_mod")->load(),
+//                                                    apvts.getRawParameterValue("D_mod")->load(),
+//                                                    apvts.getRawParameterValue("S_mod")->load(),
+//                                                    apvts.getRawParameterValue("R_mod")->load()));
+//    }
     
     double currentAngle = 0.0, angleDelta = 0.0, level = 0.0;
 //    double tailOff = 0.0;
@@ -226,6 +248,8 @@ private:
     
     juce::ADSR ampEnv{};
     juce::ADSR modEnv{};
+    juce::ADSR filterEnv{};
+    juce::ADSR pitchEnv{};
 };
 
 
