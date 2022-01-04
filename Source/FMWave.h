@@ -214,15 +214,15 @@ private:
         // but without this i noted that the envelope does not reset when playing notes rapidly.
         ampEnv.reset(); modEnv.reset();pitchEnv.reset(); filterEnv.reset();
     }
-    void setEnvelope(juce::ADSR& env,std::string name){
+    void setEnvelope(juce::ADSR& env,std::string param_name){
        
         // this is a bit of a hack, and not really a safe way to do this.
         // maybe better to make a subclass of ADSR that include refs to the parameters
  
-         env.setParameters(juce::ADSR::Parameters(apvts.getRawParameterValue("A_"+name)->load(),
-                                                    apvts.getRawParameterValue("D_"+name)->load(),
-                                                    apvts.getRawParameterValue("S_"+name)->load(),
-                                                    apvts.getRawParameterValue("R_"+name)->load()));
+         env.setParameters(juce::ADSR::Parameters(apvts.getRawParameterValue("A_"+param_name)->load(),
+                                                    apvts.getRawParameterValue("D_"+param_name)->load(),
+                                                    apvts.getRawParameterValue("S_"+param_name)->load(),
+                                                    apvts.getRawParameterValue("R_"+param_name)->load()));
     }
     
     
