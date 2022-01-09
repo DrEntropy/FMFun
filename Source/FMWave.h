@@ -89,7 +89,13 @@ struct FMVoice   : public juce::SynthesiserVoice
         
         // Jump smoothed parameters to current value
         s_mI.setCurrentAndTargetValue(apvts.getRawParameterValue("mI")->load());
-        filter.setCutoffFrequencyHz(apvts.getRawParameterValue("cutOff")->load());
+        
+        float filterMod= apvts.getRawParameterValue("filterMod")->load();
+        // start the filter in the right state ...
+        if(filterMod <= 0)
+             filter.setCutoffFrequencyHz(apvts.getRawParameterValue("cutOff")->load());
+        else
+            filter.setCutoffFrequencyHz(20.0f);
         filter.reset();
         //filter.setCutoffFrequencyHz(1000.0f);
     }
@@ -128,27 +134,21 @@ struct FMVoice   : public juce::SynthesiserVoice
         if (angleDelta != 0.0)
         {
              
-            // I might want a smoother for pitchModAmt and filter mod amt
-            
-            float pitchModAmt =  apvts.getRawParameterValue("pitchMod")->load();
-            float filterModAmt = apvts.getRawParameterValue("filterMod")->load();
-        
+
             // see https://docs.juce.com/master/tutorial_audio_processor_value_tree_state.html
             float newmI = apvts.getRawParameterValue("mI")->load();
             s_mI.setTargetValue(newmI);
             
-            // compute filter mod.
-            float filterMod = filterEnv.getNextSample()*filterModAmt;
-            float cutOffSetting =  apvts.getRawParameterValue("cutOff")->load();
-            
-            float cutOff = juce::jlimit(20.0,20000.0,cutOffSetting+filterMod*20000.0);
-            // note that the latter filter has built in .05 smoothing ...its in the source.
-            filter.setCutoffFrequencyHz(cutOff);
+         
           
             float mI;
             
             if (ampEnv.isActive())
             {
+                float pitchModAmt =  apvts.getRawParameterValue("pitchMod")->load();
+                float filterModAmt = apvts.getRawParameterValue("filterMod")->load();
+                
+                
                 auto numChannels = outputBuffer.getNumChannels();
                 
                 
@@ -159,12 +159,47 @@ struct FMVoice   : public juce::SynthesiserVoice
                 auto sampleCount = numSamples;
                 while (--sampleCount >= 0)
                 {
-                    // advance the filter envelope.
-                    // TODO fix the off by one sample issue here. or not.
-                    filterEnv.getNextSample();
+                    if(sampleCount==numSamples-1)
+                    {
+                        // once per block
+                        
+                        // I might want a smoother for pitchModAmt and filter mod amt
+                        
+
+                    
+                        
+                        // compute filter mod.
+                        float filterMod;
+                        // this bit here is not tested yest
+                        // filter mod amt determins how deep the filtering goes down
+                        if(filterModAmt >= 0)
+                            filterMod = (filterEnv.getNextSample()-1.0f)*filterModAmt;
+                        else
+                            filterMod = filterEnv.getNextSample()*filterModAmt;
+                        
+                        // note these should always be negative ^^^
+                        
+                        // cutOff now sets maximum
+                        float cutOffSetting =  apvts.getRawParameterValue("cutOff")->load();
+                        
+                        //
+                        
+                        float cutOff = exp2(filterMod)*cutOffSetting;
+                        
+                        
+                        // note that the ladder filter has built in .05 smoothing ...its in the source.
+                        // NOTE: Might need to jlimit this to make sure it is in range later ...
+                        filter.setCutoffFrequencyHz(cutOff);
+                        
+                    } else {
+                        // advance the filter envelope.
+                         
+                        filterEnv.getNextSample();
+                    }
+               
                     // maybe only do this once per block??? Consider, do as i did the filter.
                     float pitchMod = pitchModAmt*pitchEnv.getNextSample();
-                    float currAngleDelta = angleDelta * pow(2.0f,pitchMod); // max mod is an octave for now.change this to use left shift?
+                    float currAngleDelta = angleDelta * exp2(pitchMod); // max mod is an octave for now.change this to use left shift?
                     mI = s_mI.getNextValue();
                     auto currentSample = (float) (std::sin (currentAngle + modEnv.getNextSample() *
                                                 mI * std::sin(currentAngle)) * level * ampEnv.getNextSample());
