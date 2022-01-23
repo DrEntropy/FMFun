@@ -147,7 +147,7 @@ struct FMVoice   : public juce::SynthesiserVoice
             {
                 float pitchModAmt =  apvts.getRawParameterValue("pitchMod")->load();
                 float filterModAmt = apvts.getRawParameterValue("filterMod")->load();
-                
+                float modRatio = apvts.getRawParameterValue("Ratio")->load();
                 
                 auto numChannels = outputBuffer.getNumChannels();
                 
@@ -202,7 +202,7 @@ struct FMVoice   : public juce::SynthesiserVoice
                     float currAngleDelta = angleDelta * exp2(pitchMod); // max mod is an octave for now.change this to use left shift?
                     mI = s_mI.getNextValue();
                     auto currentSample = (float) (std::sin (currentAngle + modEnv.getNextSample() *
-                                                mI * std::sin(currentAngle)) * level * ampEnv.getNextSample());
+                                                mI * std::sin(currentAngle*modRatio)) * level * ampEnv.getNextSample());
                     tempBuff.setSample(0, currSampleNum, currentSample);
 
                     currentAngle += currAngleDelta;
