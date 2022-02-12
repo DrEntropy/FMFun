@@ -11,11 +11,12 @@
 
 //==============================================================================
 FMFunEditor::FMFunEditor (FMFun& p,APVTS& apvts)
-    : AudioProcessorEditor (&p), audioProcessor (p),apvts(apvts)
+    : AudioProcessorEditor (&p), audioProcessor (p),apvts(apvts),ampControl("amp",apvts)
 {
   
 
     addAndMakeVisible (mISlider);
+    addAndMakeVisible(ampControl);
     // This idiom i am not super happy with.
     mIAttachment.reset (new SliderAttachment (apvts, "mI", mISlider));
    
@@ -44,4 +45,8 @@ void FMFunEditor::resized()
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
     mISlider.setBounds(getLocalBounds());
+    
+    auto bounds = getLocalBounds();
+    mISlider.setBounds(bounds.removeFromTop (getWidth() / 2));
+    ampControl.setBounds (bounds);
 }
