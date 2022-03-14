@@ -85,8 +85,11 @@ private:
     typedef juce::AudioProcessorValueTreeState::SliderAttachment SliderAttachment;
     
     
-    //
+    // Amplitude envelopes.
     ADSRControl ampControl;
+    ADSRControl modControl;
+    ADSRControl filterControl;
+    ADSRControl pitchControl;
     
     // define the controls.... will be so many!
     juce::Slider mISlider;

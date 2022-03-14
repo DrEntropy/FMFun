@@ -11,18 +11,22 @@
 
 //==============================================================================
 FMFunEditor::FMFunEditor (FMFun& p,APVTS& apvts)
-    : AudioProcessorEditor (&p), audioProcessor (p),apvts(apvts),ampControl("amp",apvts)
+    : AudioProcessorEditor (&p), audioProcessor (p),apvts(apvts),ampControl("amp",apvts),
+      modControl("mod",apvts),filterControl("filter",apvts),pitchControl("pitch",apvts)
 {
   
 
     addAndMakeVisible (mISlider);
     addAndMakeVisible(ampControl);
+    addAndMakeVisible(modControl);
+    addAndMakeVisible(filterControl);
+    addAndMakeVisible(pitchControl);
     // This idiom i am not super happy with.
     mIAttachment.reset (new SliderAttachment (apvts, "mI", mISlider));
    
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-    setSize (400, 300);
+    setSize (400, 800);
 }
 
 FMFunEditor::~FMFunEditor()
@@ -47,6 +51,15 @@ void FMFunEditor::resized()
     mISlider.setBounds(getLocalBounds());
     
     auto bounds = getLocalBounds();
-    mISlider.setBounds(bounds.removeFromTop (getWidth() / 2));
-    ampControl.setBounds (bounds);
+    // top is for the regular sliders, tbd
+    mISlider.setBounds(bounds.removeFromTop (getHeight() / 2));
+    
+    // set bounds for the ADSRs on the bottom half
+   int adsrH = bounds.getHeight()/4;
+    
+    ampControl.setBounds (bounds.removeFromTop(adsrH));
+    modControl.setBounds (bounds.removeFromTop(adsrH));
+    pitchControl.setBounds (bounds.removeFromTop(adsrH));
+    filterControl.setBounds (bounds.removeFromTop(adsrH));
+    
 }
