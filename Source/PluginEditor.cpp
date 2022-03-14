@@ -12,21 +12,26 @@
 //==============================================================================
 FMFunEditor::FMFunEditor (FMFun& p,APVTS& apvts)
     : AudioProcessorEditor (&p), audioProcessor (p),apvts(apvts),ampControl("amp",apvts),
-      modControl("mod",apvts),filterControl("filter",apvts),pitchControl("pitch",apvts)
+      modControl("mod",apvts),filterControl("filter",apvts),pitchControl("pitch",apvts),
+      mISlider("mI","Index",apvts),ratioSlider("Ratio","Ratio", apvts), cutOffSlider("cutOff", "cutOff", apvts),
+      pitchModSlider("pitchMod","pitch Mod",apvts),filterModSlider("filterMod","Filter mod",apvts)
 {
   
 
     addAndMakeVisible (mISlider);
-    addAndMakeVisible (mILabel);
-    mILabel.setText ("Mod Index", juce::dontSendNotification);
-    mILabel.attachToComponent (&mISlider, true); // [4]
+    addAndMakeVisible (ratioSlider);
+    addAndMakeVisible (cutOffSlider);
+    addAndMakeVisible  (pitchModSlider);
+    addAndMakeVisible  (filterModSlider);
+
+   
     
     addAndMakeVisible(ampControl);
     addAndMakeVisible(modControl);
     addAndMakeVisible(filterControl);
     addAndMakeVisible(pitchControl);
     // This idiom i am not super happy with.
-    mIAttachment.reset (new SliderAttachment (apvts, "mI", mISlider));
+    //  mIAttachment.reset (new SliderAttachment (apvts, "mI", mISlider));
    
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
@@ -52,17 +57,25 @@ void FMFunEditor::resized()
 {
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
-    mISlider.setBounds(getLocalBounds());
+ 
     
     auto bounds = getLocalBounds();
     // top is for the regular sliders, tbd
     auto sliderBounds = bounds.removeFromTop(getHeight()/2);
-    sliderBounds.removeFromLeft(120); // make room for the labels.
+   
     
     // six sliders : index, Ratio, Cutoff, pitchMod amount, filter Mod amount, feedback amount.
     int sliderH = sliderBounds.getHeight()/6;
     mISlider.setBounds(sliderBounds.removeFromTop (sliderH));
-    // TODO Add the other four sliders 
+    ratioSlider.setBounds(sliderBounds.removeFromTop (sliderH));
+    cutOffSlider.setBounds(sliderBounds.removeFromTop (sliderH));
+    pitchModSlider.setBounds(sliderBounds.removeFromTop (sliderH));
+    filterModSlider.setBounds(sliderBounds.removeFromTop (sliderH));
+    
+    // room for one more here
+     
+
+  
     
     // set bounds for the ADSRs on the bottom half
    int adsrH = bounds.getHeight()/4;

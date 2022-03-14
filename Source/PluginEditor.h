@@ -61,6 +61,40 @@ private:
 };
 
 
+class ParameterSlider : public juce::Component
+{
+public:
+    using APVTS = juce::AudioProcessorValueTreeState;
+    ParameterSlider (const juce::String& parameterID,const juce::String& name,APVTS& apvts) : apvts(apvts)
+    {
+        addAndMakeVisible (theSlider);
+        theAttachment.reset (new SliderAttachment (apvts,parameterID, theSlider));
+        addAndMakeVisible (theLabel);
+        theLabel.setText (name, juce::dontSendNotification);
+        theLabel.attachToComponent (&theSlider, true);
+    }
+    
+    void resized() override
+    {
+        auto bounds = getLocalBounds().reduced(10);
+        auto width = getWidth();
+        
+        bounds.removeFromLeft(width/6); // make room for the labels.
+        theSlider.setBounds(bounds);
+        
+        
+    }
+    
+private:
+    typedef juce::AudioProcessorValueTreeState::SliderAttachment SliderAttachment;
+    APVTS& apvts;
+    
+    juce::Slider theSlider;
+    juce::Label theLabel;
+    std::unique_ptr<SliderAttachment> theAttachment;
+    
+};
+
 
 class FMFunEditor  : public juce::AudioProcessorEditor
 {
@@ -92,9 +126,11 @@ private:
     ADSRControl pitchControl;
     
     // define the controls.... will be so many!
-    juce::Slider mISlider;
-    juce::Label mILabel;
-    std::unique_ptr<SliderAttachment> mIAttachment;
+    ParameterSlider mISlider;
+    ParameterSlider ratioSlider;
+    ParameterSlider cutOffSlider;
+    ParameterSlider pitchModSlider;
+    ParameterSlider filterModSlider;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FMFunEditor)
 };
