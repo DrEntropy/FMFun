@@ -59,7 +59,8 @@ void FMFunEditor::resized()
     auto sliderBounds = bounds.removeFromTop(getHeight()/2);
     sliderBounds.removeFromLeft(120); // make room for the labels.
     
-    int sliderH = sliderBounds.getHeight()/5;
+    // six sliders : index, Ratio, Cutoff, pitchMod amount, filter Mod amount, feedback amount.
+    int sliderH = sliderBounds.getHeight()/6;
     mISlider.setBounds(sliderBounds.removeFromTop (sliderH));
     // TODO Add the other four sliders 
     
