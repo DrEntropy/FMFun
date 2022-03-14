@@ -23,6 +23,7 @@ FMFunEditor::FMFunEditor (FMFun& p,APVTS& apvts)
     addAndMakeVisible (cutOffSlider);
     addAndMakeVisible  (pitchModSlider);
     addAndMakeVisible  (filterModSlider);
+    addAndMakeVisible (fbSlider);
 
    
     
@@ -71,6 +72,7 @@ void FMFunEditor::resized()
     cutOffSlider.setBounds(sliderBounds.removeFromTop (sliderH));
     pitchModSlider.setBounds(sliderBounds.removeFromTop (sliderH));
     filterModSlider.setBounds(sliderBounds.removeFromTop (sliderH));
+    fbSlider.setBounds(sliderBounds);
     
     // room for one more here
      

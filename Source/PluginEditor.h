@@ -24,6 +24,7 @@ public:
     ADSRControl (const juce::String& name,APVTS& apvts) : apvts(apvts)
     {
         // later add seperate display name
+        
         setText (name);
         setTextLabelPosition (juce::Justification::centredTop);
         addAndMakeVisible (A_Slider);
@@ -65,10 +66,12 @@ class ParameterSlider : public juce::Component
 {
 public:
     using APVTS = juce::AudioProcessorValueTreeState;
-    ParameterSlider (const juce::String& parameterID,const juce::String& name,APVTS& apvts) : apvts(apvts)
+    ParameterSlider (const juce::String& parameterID,APVTS& apvts) : apvts(apvts)
     {
         addAndMakeVisible (theSlider);
         theAttachment.reset (new SliderAttachment (apvts,parameterID, theSlider));
+        // 10 characters? To do make this better.
+        auto name = apvts.getParameter(parameterID)->getName(10);
         addAndMakeVisible (theLabel);
         theLabel.setText (name, juce::dontSendNotification);
         theLabel.attachToComponent (&theSlider, true);
@@ -131,6 +134,7 @@ private:
     ParameterSlider cutOffSlider;
     ParameterSlider pitchModSlider;
     ParameterSlider filterModSlider;
+    ParameterSlider fbSlider;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FMFunEditor)
 };

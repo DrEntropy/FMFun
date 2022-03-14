@@ -148,6 +148,8 @@ struct FMVoice   : public juce::SynthesiserVoice
                 float pitchModAmt =  apvts.getRawParameterValue("pitchMod")->load();
                 float filterModAmt = apvts.getRawParameterValue("filterMod")->load();
                 float modRatio = apvts.getRawParameterValue("Ratio")->load();
+                // not used yet.
+                float fbAmount = apvts.getRawParameterValue("fb")-> load();
                 
                 auto numChannels = outputBuffer.getNumChannels();
                 
