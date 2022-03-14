@@ -13,8 +13,9 @@
 FMFunEditor::FMFunEditor (FMFun& p,APVTS& apvts)
     : AudioProcessorEditor (&p), audioProcessor (p),apvts(apvts),ampControl("amp",apvts),
       modControl("mod",apvts),filterControl("filter",apvts),pitchControl("pitch",apvts),
-      mISlider("mI","Index",apvts),ratioSlider("Ratio","Ratio", apvts), cutOffSlider("cutOff", "cutOff", apvts),
-      pitchModSlider("pitchMod","pitch Mod",apvts),filterModSlider("filterMod","Filter mod",apvts)
+      mISlider("mI",apvts),ratioSlider("Ratio", apvts), cutOffSlider("cutOff", apvts),
+      pitchModSlider("pitchMod",apvts),filterModSlider("filterMod",apvts),
+      fbSlider("fb",apvts)
 {
   
 
