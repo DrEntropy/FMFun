@@ -192,6 +192,8 @@ struct FMVoice   : public juce::SynthesiserVoice
                         // note that the ladder filter has built in .05 smoothing ...its in the source.
                         // NOTE: Might need to jlimit this to make sure it is in range later ...
                         filter.setCutoffFrequencyHz(cutOff);
+                        float resonance =apvts.getRawParameterValue("res")->load();
+                        filter.setResonance(resonance);
                         
                     } else {
                         // advance the filter envelope.

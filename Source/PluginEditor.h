@@ -132,6 +132,7 @@ private:
     ParameterSlider mISlider;
     ParameterSlider ratioSlider;
     ParameterSlider cutOffSlider;
+    ParameterSlider resSlider;
     ParameterSlider pitchModSlider;
     ParameterSlider filterModSlider;
     ParameterSlider fbSlider;

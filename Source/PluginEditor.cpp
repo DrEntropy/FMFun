@@ -13,7 +13,7 @@
 FMFunEditor::FMFunEditor (FMFun& p,APVTS& apvts)
     : AudioProcessorEditor (&p), audioProcessor (p),apvts(apvts),ampControl("amp",apvts),
       modControl("mod",apvts),filterControl("filter",apvts),pitchControl("pitch",apvts),
-      mISlider("mI",apvts),ratioSlider("Ratio", apvts), cutOffSlider("cutOff", apvts),
+      mISlider("mI",apvts),ratioSlider("Ratio", apvts), cutOffSlider("cutOff", apvts),resSlider("res",apvts),
       pitchModSlider("pitchMod",apvts),filterModSlider("filterMod",apvts),
       fbSlider("fb",apvts)
 {
@@ -22,6 +22,7 @@ FMFunEditor::FMFunEditor (FMFun& p,APVTS& apvts)
     addAndMakeVisible (mISlider);
     addAndMakeVisible (ratioSlider);
     addAndMakeVisible (cutOffSlider);
+    addAndMakeVisible (resSlider);
     addAndMakeVisible  (pitchModSlider);
     addAndMakeVisible  (filterModSlider);
     addAndMakeVisible (fbSlider);
@@ -67,13 +68,15 @@ void FMFunEditor::resized()
    
     
     // six sliders : index, Ratio, Cutoff, pitchMod amount, filter Mod amount, feedback amount.
-    int sliderH = sliderBounds.getHeight()/6;
+    int sliderH = sliderBounds.getHeight()/7;
     mISlider.setBounds(sliderBounds.removeFromTop (sliderH));
     ratioSlider.setBounds(sliderBounds.removeFromTop (sliderH));
     cutOffSlider.setBounds(sliderBounds.removeFromTop (sliderH));
+    resSlider.setBounds(sliderBounds.removeFromTop(sliderH));
     pitchModSlider.setBounds(sliderBounds.removeFromTop (sliderH));
     filterModSlider.setBounds(sliderBounds.removeFromTop (sliderH));
     fbSlider.setBounds(sliderBounds);
+    
     
     // room for one more here
      

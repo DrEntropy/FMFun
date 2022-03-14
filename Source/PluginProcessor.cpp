@@ -31,7 +31,8 @@ juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout()
     // four octaves, note that at extremes there will be aliasing and it sound funky as f.
     layout.add(std::make_unique<juce::AudioParameterFloat> ("pitchMod","pitch mod",juce::NormalisableRange<float>(-4.0f,4.0f),0.f));
     layout.add(std::make_unique<juce::AudioParameterFloat> ("filterMod","filter mod",juce::NormalisableRange<float>(-10.0f,10.0f),0.f));
-    
+    // UNTESTED
+    layout.add(std::make_unique<juce::AudioParameterFloat> ("res","Resonance",juce::NormalisableRange<float>(0.0f,1.0f),0.f));
     // Feedback doesnt do anything yet
     layout.add(std::make_unique<juce::AudioParameterFloat> ("fb","Feedback",juce::NormalisableRange<float>(0.0f,10.0f),0.f));
     // Amplitude envelope
