@@ -93,6 +93,7 @@ private:
     
     // define the controls.... will be so many!
     juce::Slider mISlider;
+    juce::Label mILabel;
     std::unique_ptr<SliderAttachment> mIAttachment;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FMFunEditor)

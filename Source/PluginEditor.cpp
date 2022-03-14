@@ -17,6 +17,10 @@ FMFunEditor::FMFunEditor (FMFun& p,APVTS& apvts)
   
 
     addAndMakeVisible (mISlider);
+    addAndMakeVisible (mILabel);
+    mILabel.setText ("Mod Index", juce::dontSendNotification);
+    mILabel.attachToComponent (&mISlider, true); // [4]
+    
     addAndMakeVisible(ampControl);
     addAndMakeVisible(modControl);
     addAndMakeVisible(filterControl);
@@ -52,7 +56,12 @@ void FMFunEditor::resized()
     
     auto bounds = getLocalBounds();
     // top is for the regular sliders, tbd
-    mISlider.setBounds(bounds.removeFromTop (getHeight() / 2));
+    auto sliderBounds = bounds.removeFromTop(getHeight()/2);
+    sliderBounds.removeFromLeft(120); // make room for the labels.
+    
+    int sliderH = sliderBounds.getHeight()/5;
+    mISlider.setBounds(sliderBounds.removeFromTop (sliderH));
+    // TODO Add the other four sliders 
     
     // set bounds for the ADSRs on the bottom half
    int adsrH = bounds.getHeight()/4;
