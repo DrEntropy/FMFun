@@ -35,6 +35,10 @@ juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout()
     layout.add(std::make_unique<juce::AudioParameterFloat> ("res","Resonance",juce::NormalisableRange<float>(0.0f,1.0f),0.f));
     // Feedback doesnt do anything yet
     layout.add(std::make_unique<juce::AudioParameterFloat> ("fb","Feedback",juce::NormalisableRange<float>(0.0f,10.0f),0.f));
+    layout.add(std::make_unique<juce::AudioParameterFloat> ("fb2","Feedback 2",juce::NormalisableRange<float>(0.0f,10.0f),0.f));
+    
+    layout.add(std::make_unique<juce::AudioParameterBool> ("pMode","Parallel Mode",false));
+               
     // Amplitude envelope
     addEnvelope(layout,"amp");
     //modulator envelope 

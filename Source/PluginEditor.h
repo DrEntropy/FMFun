@@ -119,7 +119,7 @@ private:
     
     APVTS& apvts;
     
-    typedef juce::AudioProcessorValueTreeState::SliderAttachment SliderAttachment;
+    typedef juce::AudioProcessorValueTreeState::ButtonAttachment ButtonAttachment;
     
     
     // Amplitude envelopes.
@@ -136,6 +136,11 @@ private:
     ParameterSlider pitchModSlider;
     ParameterSlider filterModSlider;
     ParameterSlider fbSlider;
+    ParameterSlider fbSlider2;  // for parallel mode only?
+    
+    // Parallel mode
+    juce::ToggleButton parallelMode{"Parallel"};
+    std::unique_ptr<ButtonAttachment> parellelModeAttachment;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FMFunEditor)
 };

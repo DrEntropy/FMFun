@@ -15,7 +15,7 @@ FMFunEditor::FMFunEditor (FMFun& p,APVTS& apvts)
       modControl("mod",apvts),filterControl("filter",apvts),pitchControl("pitch",apvts),
       mISlider("mI",apvts),ratioSlider("Ratio", apvts), cutOffSlider("cutOff", apvts),resSlider("res",apvts),
       pitchModSlider("pitchMod",apvts),filterModSlider("filterMod",apvts),
-      fbSlider("fb",apvts)
+      fbSlider("fb",apvts),fbSlider2("fb2",apvts)
 {
   
 
@@ -26,19 +26,21 @@ FMFunEditor::FMFunEditor (FMFun& p,APVTS& apvts)
     addAndMakeVisible  (pitchModSlider);
     addAndMakeVisible  (filterModSlider);
     addAndMakeVisible (fbSlider);
-
-   
+    addAndMakeVisible (fbSlider2);
+    
+    //button for running the two ops in parallel instead.
+    addAndMakeVisible (parallelMode);
+    parellelModeAttachment.reset(new ButtonAttachment(apvts,"pMode",parallelMode));
     
     addAndMakeVisible(ampControl);
     addAndMakeVisible(modControl);
     addAndMakeVisible(filterControl);
     addAndMakeVisible(pitchControl);
-    // This idiom i am not super happy with.
-    //  mIAttachment.reset (new SliderAttachment (apvts, "mI", mISlider));
+   
    
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-    setSize (400, 800);
+    setSize (500, 800);
 }
 
 FMFunEditor::~FMFunEditor()
@@ -63,19 +65,24 @@ void FMFunEditor::resized()
  
     
     auto bounds = getLocalBounds();
+    // split in two
+    // TODO rmeove hard wired numbers
+    auto rightBounds = bounds.removeFromRight(100);
+    parallelMode.setBounds(rightBounds.removeFromTop(100));
     // top is for the regular sliders, tbd
     auto sliderBounds = bounds.removeFromTop(getHeight()/2);
    
     
-    // six sliders : index, Ratio, Cutoff, pitchMod amount, filter Mod amount, feedback amount.
-    int sliderH = sliderBounds.getHeight()/7;
+    const int num_of_sliders = 8;
+    int sliderH = sliderBounds.getHeight()/num_of_sliders;
     mISlider.setBounds(sliderBounds.removeFromTop (sliderH));
     ratioSlider.setBounds(sliderBounds.removeFromTop (sliderH));
     cutOffSlider.setBounds(sliderBounds.removeFromTop (sliderH));
     resSlider.setBounds(sliderBounds.removeFromTop(sliderH));
     pitchModSlider.setBounds(sliderBounds.removeFromTop (sliderH));
     filterModSlider.setBounds(sliderBounds.removeFromTop (sliderH));
-    fbSlider.setBounds(sliderBounds);
+    fbSlider.setBounds(sliderBounds.removeFromTop(sliderH));
+    fbSlider2.setBounds(sliderBounds);
     
     
     // room for one more here
