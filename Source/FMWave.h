@@ -65,6 +65,7 @@ struct FMVoice   : public juce::SynthesiserVoice
                     juce::SynthesiserSound*, int /*currentPitchWheelPosition*/) override
     {
         currentAngle = 0.0;
+        currentAngle2 = 0.0;  // start out in sync
         prevSample1=prevSample2 = 0.0;
         level = velocity * 0.15;
 //        tailOff = 0.0;
@@ -153,6 +154,9 @@ struct FMVoice   : public juce::SynthesiserVoice
                 float mix1 =  sqrt((1.0-mix)/2.0);
                 float mix2 = sqrt((1.0+mix)/2.0);
                 
+                // note no GUI for this one yet.
+                float detune = apvts.getRawParameterValue("Detune")-> load();
+                
                 // not used yet, will use prevSample member variable
                 float fb1 = apvts.getRawParameterValue("fb")-> load();
                 float fb2  = apvts.getRawParameterValue("fb2")-> load();
@@ -214,18 +218,19 @@ struct FMVoice   : public juce::SynthesiserVoice
                     // maybe only do this once per block??? Consider, do as i did the filter.
                     float pitchMod = pitchModAmt*pitchEnv.getNextSample();
                     float currAngleDelta = angleDelta * exp2(pitchMod); // max mod is an octave for now.change this to use left shift?
+                    float currAngleDelta2 =angleDelta * exp2(pitchMod+detune/1200.0); // detune 
                     float currentSample;
                     float mI = s_mI.getNextValue();
                     if(pMode)
                     {
                         prevSample1  = (float) (std::sin (currentAngle+fb1*prevSample1) );
-                        prevSample2  = (float) (std::sin(currentAngle*modRatio + fb2*prevSample2) );
+                        prevSample2  = (float) (std::sin(currentAngle2*modRatio + fb2*prevSample2) );
                         currentSample = (mix1*prevSample1 * op1Env.getNextSample()+mix2*op2Env.getNextSample()*prevSample2)* level;
                     } else {
                     
                     
                         prevSample1 = (float) (std::sin (currentAngle + op2Env.getNextSample() *
-                                                mI * std::sin(currentAngle*modRatio)) * level * op1Env.getNextSample());
+                                                mI * std::sin(currentAngle2*modRatio)) * level * op1Env.getNextSample());
                         prevSample2 =0.0f;
                         currentSample=prevSample1;
                     }
@@ -234,6 +239,7 @@ struct FMVoice   : public juce::SynthesiserVoice
                     tempBuff.setSample(0, currSampleNum, currentSample);
 
                     currentAngle += currAngleDelta;
+                    currentAngle2 += currAngleDelta2;
                     ++currSampleNum;
 
  
@@ -297,7 +303,7 @@ private:
 //                                                    apvts.getRawParameterValue("R_mod")->load()));
 //    }
     
-    double currentAngle = 0.0, angleDelta = 0.0, level = 0.0;
+    double currentAngle = 0.0, currentAngle2=0.0,angleDelta = 0.0, level = 0.0;
     float prevSample1 =0.0f;  // Used for feedback FM
     float prevSample2 =0.0f;  // Used for feedback FM parallel mode
 //    double tailOff = 0.0;
