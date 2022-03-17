@@ -134,6 +134,7 @@ private:
     std::unique_ptr<SliderAttachment> mixAttachment;
    
     ParameterSlider ratioSlider;
+    ParameterSlider detuneSlider;
     ParameterSlider cutOffSlider;
     ParameterSlider resSlider;
     ParameterSlider pitchModSlider;
