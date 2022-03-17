@@ -129,7 +129,7 @@ private:
     ADSRControl pitchControl;
     
     // define the controls.... will be so many!
-    ParameterSlider mISlider;
+    ParameterSlider op2AmpSlider;
     ParameterSlider ratioSlider;
     ParameterSlider cutOffSlider;
     ParameterSlider resSlider;

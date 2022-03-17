@@ -42,14 +42,14 @@ struct FMVoice   : public juce::SynthesiserVoice
         if(newRate>0)
         {
           s_mI.reset(newRate,0.050f);
-            ampEnv.setSampleRate(newRate);
-            modEnv.setSampleRate(newRate);
+            op1Env.setSampleRate(newRate);
+            op2Env.setSampleRate(newRate);
             pitchEnv.setSampleRate(newRate);
             filterEnv.setSampleRate(newRate);
             
             setupEnvelopes();
           
-        // modEnv.setParameters(juce::ADSR::Parameters(.1f,.1f,1.0f,.1f));
+        // op2Env.setParameters(juce::ADSR::Parameters(.1f,.1f,1.0f,.1f));
         }
         // call super
         juce::SynthesiserVoice::setCurrentPlaybackSampleRate(newRate);
@@ -82,14 +82,14 @@ struct FMVoice   : public juce::SynthesiserVoice
         // Start envelopes running
         
         
-        ampEnv.noteOn();
-        modEnv.noteOn();
+        op1Env.noteOn();
+        op2Env.noteOn();
         pitchEnv.noteOn();
         filterEnv.noteOn();
          
         
         // Jump smoothed parameters to current value
-        s_mI.setCurrentAndTargetValue(apvts.getRawParameterValue("mI")->load());
+        s_mI.setCurrentAndTargetValue(apvts.getRawParameterValue("op2Amp")->load());
         
         float filterMod= apvts.getRawParameterValue("filterMod")->load();
         // start the filter in the right state ...
@@ -105,8 +105,8 @@ struct FMVoice   : public juce::SynthesiserVoice
     {
         if (allowTailOff)
         {
-            ampEnv.noteOff();
-            modEnv.noteOff();
+            op1Env.noteOff();
+            op2Env.noteOff();
             filterEnv.noteOff();
             pitchEnv.noteOff();
 //            if (tailOff == 0.0)
@@ -114,8 +114,8 @@ struct FMVoice   : public juce::SynthesiserVoice
         }
         else
         {
-            ampEnv.reset();
-            modEnv.reset();
+            op1Env.reset();
+            op2Env.reset();
             pitchEnv.reset();
             filterEnv.reset();
             clearCurrentNote();
@@ -138,14 +138,12 @@ struct FMVoice   : public juce::SynthesiserVoice
              
 
             // see https://docs.juce.com/master/tutorial_audio_processor_value_tree_state.html
-            float newmI = apvts.getRawParameterValue("mI")->load();
+            // mI because op2 amp is also modulation index
+            float newmI = apvts.getRawParameterValue("op2Amp")->load();
             s_mI.setTargetValue(newmI);
             
-         
-          
-            float mI;
             
-            if (ampEnv.isActive())
+            if (op1Env.isActive())
             {
                 float pitchModAmt =  apvts.getRawParameterValue("pitchMod")->load();
                 float filterModAmt = apvts.getRawParameterValue("filterMod")->load();
@@ -213,17 +211,17 @@ struct FMVoice   : public juce::SynthesiserVoice
                     float pitchMod = pitchModAmt*pitchEnv.getNextSample();
                     float currAngleDelta = angleDelta * exp2(pitchMod); // max mod is an octave for now.change this to use left shift?
                     float currentSample;
-                    
+                    float mI = s_mI.getNextValue();
                     if(pMode)
                     {
-                        prevSample1  = (float) (std::sin (currentAngle));
-                        prevSample2  = (float) (std::sin(currentAngle*modRatio));
-                        currentSample = (prevSample1+prevSample2)* level * ampEnv.getNextSample();
+                        prevSample1  = (float) (std::sin (currentAngle) * op1Env.getNextSample() );
+                        prevSample2  = (float) (std::sin(currentAngle*modRatio)*op2Env.getNextSample() );
+                        currentSample = (prevSample1+mI*prevSample2)* level;
                     } else {
                     
-                    mI = s_mI.getNextValue();
-                    currentSample = (float) (std::sin (currentAngle + modEnv.getNextSample() *
-                                                mI * std::sin(currentAngle*modRatio)) * level * ampEnv.getNextSample());
+                    
+                    currentSample = (float) (std::sin (currentAngle + op2Env.getNextSample() *
+                                                mI * std::sin(currentAngle*modRatio)) * level * op1Env.getNextSample());
                     }
                     
                  
@@ -265,13 +263,13 @@ struct FMVoice   : public juce::SynthesiserVoice
 private:
     
     void setupEnvelopes(){
-        setEnvelope(ampEnv,"amp");
-        setEnvelope(modEnv,"mod");
+        setEnvelope(op1Env,"op1EG");
+        setEnvelope(op2Env,"op2EG");
         setEnvelope(pitchEnv,"pitch");
         setEnvelope(filterEnv,"filter");
         // reset the envelopes in case we got stolen note. Should happen with stopnote,
         // but without this i noted that the envelope does not reset when playing notes rapidly.
-        ampEnv.reset(); modEnv.reset();pitchEnv.reset(); filterEnv.reset();
+        op1Env.reset(); op2Env.reset();pitchEnv.reset(); filterEnv.reset();
     }
     void setEnvelope(juce::ADSR& env,std::string param_name){
        
@@ -287,7 +285,7 @@ private:
     
 //    void setModEnvelop(){
 //       // apvts.getRawParameterValue("A_amp")->load();
-//        modEnv.setParameters(juce::ADSR::Parameters(apvts.getRawParameterValue("A_mod")->load(),
+//        op2Env.setParameters(juce::ADSR::Parameters(apvts.getRawParameterValue("A_mod")->load(),
 //                                                    apvts.getRawParameterValue("D_mod")->load(),
 //                                                    apvts.getRawParameterValue("S_mod")->load(),
 //                                                    apvts.getRawParameterValue("R_mod")->load()));
@@ -312,8 +310,8 @@ private:
     // ladder filter for each voice
      juce::dsp::LadderFilter<float> filter{};
     
-    juce::ADSR ampEnv{};
-    juce::ADSR modEnv{};
+    juce::ADSR op1Env{};
+    juce::ADSR op2Env{};
     juce::ADSR filterEnv{};
     juce::ADSR pitchEnv{};
 };
