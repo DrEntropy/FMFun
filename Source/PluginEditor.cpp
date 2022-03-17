@@ -13,13 +13,19 @@
 FMFunEditor::FMFunEditor (FMFun& p,APVTS& apvts)
     : AudioProcessorEditor (&p), audioProcessor (p),apvts(apvts),ampControl("op1EG",apvts),
       modControl("op2EG",apvts),filterControl("filter",apvts),pitchControl("pitch",apvts),
-      op2AmpSlider("op2Amp",apvts),ratioSlider("Ratio", apvts), cutOffSlider("cutOff", apvts),resSlider("res",apvts),
+      mISlider("mI",apvts),ratioSlider("Ratio", apvts), cutOffSlider("cutOff", apvts),
+      resSlider("res",apvts),
       pitchModSlider("pitchMod",apvts),filterModSlider("filterMod",apvts),
       fbSlider("fb",apvts),fbSlider2("fb2",apvts)
 {
   
 
-    addAndMakeVisible (op2AmpSlider);
+    addAndMakeVisible (mISlider);
+    
+    // this one is rotary so seperated out.
+    addAndMakeVisible (mixSlider);
+    mixAttachment.reset(new SliderAttachment(apvts,"opMix",mixSlider));
+    
     addAndMakeVisible (ratioSlider);
     addAndMakeVisible (cutOffSlider);
     addAndMakeVisible (resSlider);
@@ -69,13 +75,14 @@ void FMFunEditor::resized()
     // TODO rmeove hard wired numbers
     auto rightBounds = bounds.removeFromRight(100);
     parallelMode.setBounds(rightBounds.removeFromTop(100));
+    mixSlider.setBounds(rightBounds.removeFromTop(100));
     // top is for the regular sliders, tbd
     auto sliderBounds = bounds.removeFromTop(getHeight()/2);
    
     
     const int num_of_sliders = 8;
     int sliderH = sliderBounds.getHeight()/num_of_sliders;
-    op2AmpSlider.setBounds(sliderBounds.removeFromTop (sliderH));
+    mISlider.setBounds(sliderBounds.removeFromTop (sliderH));
     
     ratioSlider.setBounds(sliderBounds.removeFromTop (sliderH));
     fbSlider.setBounds(sliderBounds.removeFromTop(sliderH));

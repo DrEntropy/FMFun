@@ -25,7 +25,8 @@ juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout()
      
   
     
-    layout.add(std::make_unique<juce::AudioParameterFloat> ("op2Amp","Op2 Amp",juce::NormalisableRange<float>(0,10),0));
+    layout.add(std::make_unique<juce::AudioParameterFloat> ("mI","FM Mod",juce::NormalisableRange<float>(0,10),0));
+    layout.add(std::make_unique<juce::AudioParameterFloat> ("opMix","Mix",juce::NormalisableRange<float>(-1.0,1.0),0.0));
     layout.add(std::make_unique<juce::AudioParameterFloat> ("Ratio","Ratio",juce::NormalisableRange<float>(0.0,10.0),1.0));
     layout.add(std::make_unique<juce::AudioParameterFloat> ("cutOff","cutOff",juce::NormalisableRange<float>(20.f,20000.f,0,0.2f),1000.f));
     // four octaves, note that at extremes there will be aliasing and it sound funky as f.

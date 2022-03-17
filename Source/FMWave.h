@@ -31,6 +31,7 @@ struct FMVoice   : public juce::SynthesiserVoice
         //
         filter.prepare(spec);
         filter.setMode(juce::dsp::LadderFilterMode::LPF24);
+        pMode  = apvts.getRawParameterValue("pMode")-> load();
     }
     
     void setCurrentPlaybackSampleRate (double newRate) override {
@@ -89,7 +90,7 @@ struct FMVoice   : public juce::SynthesiserVoice
          
         
         // Jump smoothed parameters to current value
-        s_mI.setCurrentAndTargetValue(apvts.getRawParameterValue("op2Amp")->load());
+        s_mI.setCurrentAndTargetValue(apvts.getRawParameterValue("mI")->load());
         
         float filterMod= apvts.getRawParameterValue("filterMod")->load();
         // start the filter in the right state ...
@@ -139,22 +140,25 @@ struct FMVoice   : public juce::SynthesiserVoice
 
             // see https://docs.juce.com/master/tutorial_audio_processor_value_tree_state.html
             // mI because op2 amp is also modulation index
-            float newmI = apvts.getRawParameterValue("op2Amp")->load();
+            float newmI = apvts.getRawParameterValue("mI")->load();
             s_mI.setTargetValue(newmI);
             
             
-            if (op1Env.isActive())
+            if (op1Env.isActive() || (op2Env.isActive() && pMode))
             {
                 float pitchModAmt =  apvts.getRawParameterValue("pitchMod")->load();
                 float filterModAmt = apvts.getRawParameterValue("filterMod")->load();
                 float modRatio = apvts.getRawParameterValue("Ratio")->load();
+                float mix = apvts.getRawParameterValue("opMix")-> load();
+                float mix1 =  sqrt((1.0-mix)/2.0);
+                float mix2 = sqrt((1.0+mix)/2.0);
                 
                 // not used yet, will use prevSample member variable
-                float fbAmount = apvts.getRawParameterValue("fb")-> load();
-                float fbAmount2 = apvts.getRawParameterValue("fb2")-> load();
+                float fb1 = apvts.getRawParameterValue("fb")-> load();
+                float fb2  = apvts.getRawParameterValue("fb2")-> load();
                 
-                
-                bool pMode  = apvts.getRawParameterValue("pMode")-> load();
+                // set pMode
+                pMode  = apvts.getRawParameterValue("pMode")-> load();
                 
                 
                 auto numChannels = outputBuffer.getNumChannels();
@@ -214,14 +218,16 @@ struct FMVoice   : public juce::SynthesiserVoice
                     float mI = s_mI.getNextValue();
                     if(pMode)
                     {
-                        prevSample1  = (float) (std::sin (currentAngle) * op1Env.getNextSample() );
-                        prevSample2  = (float) (std::sin(currentAngle*modRatio)*op2Env.getNextSample() );
-                        currentSample = (prevSample1+mI*prevSample2)* level;
+                        prevSample1  = (float) (std::sin (currentAngle+fb1*prevSample1) );
+                        prevSample2  = (float) (std::sin(currentAngle*modRatio + fb2*prevSample2) );
+                        currentSample = (mix1*prevSample1 * op1Env.getNextSample()+mix2*op2Env.getNextSample()*prevSample2)* level;
                     } else {
                     
                     
-                    currentSample = (float) (std::sin (currentAngle + op2Env.getNextSample() *
+                        prevSample1 = (float) (std::sin (currentAngle + op2Env.getNextSample() *
                                                 mI * std::sin(currentAngle*modRatio)) * level * op1Env.getNextSample());
+                        prevSample2 =0.0f;
+                        currentSample=prevSample1;
                     }
                     
                  
@@ -299,7 +305,7 @@ private:
     double pitchShift =0.0;
     double cyclesPerSecond=0.0; // current frequency
     
-    
+    bool pMode =false;
     juce::AudioProcessorValueTreeState& apvts;
     
     

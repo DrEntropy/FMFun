@@ -120,7 +120,7 @@ private:
     APVTS& apvts;
     
     typedef juce::AudioProcessorValueTreeState::ButtonAttachment ButtonAttachment;
-    
+    typedef juce::AudioProcessorValueTreeState::SliderAttachment SliderAttachment;
     
     // Amplitude envelopes.
     ADSRControl ampControl;
@@ -129,7 +129,10 @@ private:
     ADSRControl pitchControl;
     
     // define the controls.... will be so many!
-    ParameterSlider op2AmpSlider;
+    ParameterSlider mISlider;
+    juce::Slider mixSlider { juce::Slider::RotaryHorizontalVerticalDrag, juce::Slider::TextBoxBelow };
+    std::unique_ptr<SliderAttachment> mixAttachment;
+   
     ParameterSlider ratioSlider;
     ParameterSlider cutOffSlider;
     ParameterSlider resSlider;
