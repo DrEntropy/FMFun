@@ -5,7 +5,14 @@
               pluginFormats="buildVST3">
   <MAINGROUP id="GKgLrK" name="FMFun">
     <GROUP id="{C212900B-67D5-8E5F-335B-AE8031790155}" name="Source">
+      <FILE id="ZqYeOW" name="Operator.cpp" compile="1" resource="0" file="Source/Operator.cpp"/>
+      <FILE id="BH1dWq" name="Operator.h" compile="0" resource="0" file="Source/Operator.h"/>
+      <FILE id="M5nKfS" name="OperatorControl.cpp" compile="1" resource="0"
+            file="Source/OperatorControl.cpp"/>
+      <FILE id="x9mbEu" name="OperatorControl.h" compile="0" resource="0"
+            file="Source/OperatorControl.h"/>
       <FILE id="YLXVJU" name="FMWave.h" compile="0" resource="0" file="Source/FMWave.h"/>
+      <FILE id="f7I2L5" name="ADSR.h" compile="0" resource="0" file="Source/ADSR.h"/>
       <FILE id="nB0eFa" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>
       <FILE id="l4qSAE" name="PluginProcessor.h" compile="0" resource="0"
