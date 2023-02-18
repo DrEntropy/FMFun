@@ -24,20 +24,20 @@ FMFunEditor::FMFunEditor (FMFun& p,APVTS& apvts)
     
     // this one is rotary so seperated out.
     addAndMakeVisible (mixSlider);
-    mixAttachment.reset(new SliderAttachment(apvts,"opMix",mixSlider));
+    mixAttachment.reset(new SliderAttachment(apvts, "opMix", mixSlider));
     
     addAndMakeVisible (ratioSlider);
     addAndMakeVisible (detuneSlider);
     addAndMakeVisible (cutOffSlider);
     addAndMakeVisible (resSlider);
-    addAndMakeVisible  (pitchModSlider);
-    addAndMakeVisible  (filterModSlider);
+    addAndMakeVisible (pitchModSlider);
+    addAndMakeVisible (filterModSlider);
     addAndMakeVisible (fbSlider);
     addAndMakeVisible (fbSlider2);
     
     //button for running the two ops in parallel instead.
     addAndMakeVisible (parallelMode);
-    parellelModeAttachment.reset(new ButtonAttachment(apvts,"pMode",parallelMode));
+    parellelModeAttachment.reset(new ButtonAttachment(apvts, "pMode", parallelMode));
     
     addAndMakeVisible(ampControl);
     addAndMakeVisible(modControl);
@@ -82,16 +82,16 @@ void FMFunEditor::resized()
    
     
     const int num_of_sliders = 9;
-    int sliderH = sliderBounds.getHeight()/num_of_sliders;
+    int sliderH = sliderBounds.getHeight() / num_of_sliders;
     mISlider.setBounds(sliderBounds.removeFromTop (sliderH));
     
-    ratioSlider.setBounds(sliderBounds.removeFromTop (sliderH));
-    detuneSlider.setBounds(sliderBounds.removeFromTop (sliderH));
+    ratioSlider.setBounds(sliderBounds.removeFromTop(sliderH));
+    detuneSlider.setBounds(sliderBounds.removeFromTop(sliderH));
     fbSlider.setBounds(sliderBounds.removeFromTop(sliderH));
     fbSlider2.setBounds(sliderBounds.removeFromTop(sliderH));
     cutOffSlider.setBounds(sliderBounds.removeFromTop (sliderH));
     resSlider.setBounds(sliderBounds.removeFromTop(sliderH));
-    pitchModSlider.setBounds(sliderBounds.removeFromTop (sliderH));
+    pitchModSlider.setBounds(sliderBounds.removeFromTop(sliderH));
     filterModSlider.setBounds(sliderBounds);
 
     

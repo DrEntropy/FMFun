@@ -23,8 +23,6 @@ juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout()
     juce::AudioProcessorValueTreeState::ParameterLayout layout;
     
      
-  
-    
     layout.add(std::make_unique<juce::AudioParameterFloat> ("mI","FM Mod",juce::NormalisableRange<float>(0,10),0));
     layout.add(std::make_unique<juce::AudioParameterFloat> ("opMix","Mix",juce::NormalisableRange<float>(-1.0,1.0),0.0));
     layout.add(std::make_unique<juce::AudioParameterFloat> ("Ratio","Ratio",juce::NormalisableRange<float>(0.0,10.0),1.0));
@@ -207,13 +205,7 @@ void FMFun::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& mi
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
-    // This is the place where you'd normally do the guts of your plugin's
-    // audio processing...
-    // Make sure to reset the state if your inner loop is processing
-    // the samples and the outer loop is handling the channels.
-    // Alternatively, you can process the samples with the channels
-    // interleaved by keeping the same state.
- 
+    // All the actual work is done in the  FMWave instance `synth`
       
     synth.renderNextBlock (buffer, midiMessages,
                             0, buffer.getNumSamples());

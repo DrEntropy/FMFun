@@ -42,7 +42,7 @@ struct FMVoice   : public juce::SynthesiserVoice
         
         if(newRate>0)
         {
-          s_mI.reset(newRate,0.050f);
+          s_mI.reset(newRate, 0.050f);
             op1Env.setSampleRate(newRate);
             op2Env.setSampleRate(newRate);
             pitchEnv.setSampleRate(newRate);
@@ -168,7 +168,7 @@ struct FMVoice   : public juce::SynthesiserVoice
                 auto numChannels = outputBuffer.getNumChannels();
                 
                 
-                // generate the fm wave into a temporary buffer prior to DSP processing.
+                // generate the fm wave in a temporary buffer prior to DSP processing.
                 // one channel only
                 juce::AudioBuffer<float> tempBuff(1,numSamples);
                 auto currSampleNum = 0;
@@ -181,17 +181,14 @@ struct FMVoice   : public juce::SynthesiserVoice
                         
                         // I might want a smoother for pitchModAmt and filter mod amt
                         
-
-                    
-                        
                         // compute filter mod.
                         float filterMod;
                         // this bit here is not tested yest
                         // filter mod amt determins how deep the filtering goes down
                         if(filterModAmt >= 0)
-                            filterMod = (filterEnv.getNextSample()-1.0f)*filterModAmt;
+                            filterMod = (filterEnv.getNextSample() - 1.0f) * filterModAmt;
                         else
-                            filterMod = filterEnv.getNextSample()*filterModAmt;
+                            filterMod = filterEnv.getNextSample() * filterModAmt;
                         
                         // note these should always be negative ^^^
                         
@@ -218,21 +215,24 @@ struct FMVoice   : public juce::SynthesiserVoice
                     // maybe only do this once per block??? Consider, do as i did the filter.
                     float pitchMod = pitchModAmt*pitchEnv.getNextSample();
                     float currAngleDelta = angleDelta * exp2(pitchMod); // max mod is an octave for now.change this to use left shift?
-                    float currentAngle2 =currentAngle *modRatio* exp2(detune/1200.0); // detune
+                    float currentAngle2 =currentAngle * modRatio * exp2(detune/1200.0); // detune
                     float currentSample;
                     float mI = s_mI.getNextValue();
+                    
+                    // This is where the actual Phase modulation take place
+                    //
+                    
                     if(pMode)
                     {
-                        prevSample1  = (float) (std::sin (currentAngle+fb1*prevSample1) );
-                        prevSample2  = (float) (std::sin(currentAngle2 + fb2*prevSample2) );
-                        currentSample = (mix1*prevSample1 * op1Env.getNextSample()+mix2*op2Env.getNextSample()*prevSample2)* level;
+                        prevSample1  = (float) (std::sin(currentAngle  + fb1 * prevSample1));
+                        prevSample2  = (float) (std::sin(currentAngle2 + fb2 * prevSample2));
+                        currentSample = (mix1 * prevSample1 * op1Env.getNextSample()+mix2 * op2Env.getNextSample() * prevSample2) * level;
                     } else {
-                    
                     
                         prevSample1 = (float) (std::sin (currentAngle + op2Env.getNextSample() *
                                                 mI * std::sin(currentAngle2)) * level * op1Env.getNextSample());
-                        prevSample2 =0.0f;
-                        currentSample=prevSample1;
+                        prevSample2 = 0.0f;
+                        currentSample = prevSample1;
                     }
                     
                  

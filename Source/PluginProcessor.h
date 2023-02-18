@@ -55,7 +55,8 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
 
 private:
-    // Decrare our synth  not sureif this will work but what the heck
+    
+    // Where all the work is done.
     juce::Synthesiser synth;
     
     // APVTS

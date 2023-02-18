@@ -4,19 +4,23 @@
 
 * see the two block diagrams
 
-* As fo Feb 18 2023, I am mothballing this project. As it is it is a very barebones 2 op fm synth.  
+* As of Feb 18 2023, I am mothballing this project. My goal was to understand how to create FM sounds with low level DSP and as a place to practice C++.  Those goals were accomplished.
+
+* As it is it is a very barebones 2 op fm synth.
 
    - Each Op has:
-     - Feedback modulation
+     - Feedback modulation (only in parallel mode)
      - Envelope Generator 
     
    - Overall there is a ladder filter (with EG for cuttoff) as well pitch modulation.
 
-   - only two algorithms are available: Parallel and sequential. 
+   - only two algorithms are available: Parallel and sequential.  
 
 ## Future work that could be done:
 
-*  Implement Operator Classes:
+* Clean up (lint) the code. 
+
+* Implement Operator Classes:
 
      - Create parameter helpers to create id strings
      - Factor all operator controls OperatorControl (placeholder file)
