@@ -16,6 +16,8 @@
 
    - only two algorithms are available: Parallel and sequential.  
 
+* Note this has only been tested on Mac OS 
+
 ## Future work that could be done:
 
 * Clean up (lint) the code. 
@@ -32,4 +34,4 @@
 * Test all parameters and fix ranges and step size
 * Improve Efficiency / bug fix
 * Move pitch env out of processing loop
-* Amplitude attack is no quite right
+* Amplitude attack is not quite right
